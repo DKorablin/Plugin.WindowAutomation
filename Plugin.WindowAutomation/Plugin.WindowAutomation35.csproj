@@ -35,12 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SAL.Flatbed, Version=1.2.9.2, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
-      <HintPath>..\packages\SAL.Flatbed.1.2.9.2\lib\net20\SAL.Flatbed.dll</HintPath>
+    <Reference Include="SAL.Flatbed, Version=1.2.10.0, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
+      <HintPath>..\packages\SAL.Flatbed.1.2.10\lib\net20\SAL.Flatbed.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SAL.Windows, Version=1.2.9.2, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
-      <HintPath>..\packages\SAL.Windows.1.2.9.2\lib\net20\SAL.Windows.dll</HintPath>
+    <Reference Include="SAL.Windows, Version=1.2.10.0, Culture=neutral, PublicKeyToken=a8ac5fc45c3adb8d, processorArchitecture=MSIL">
+      <HintPath>..\packages\SAL.Windows.1.2.10\lib\net20\SAL.Windows.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

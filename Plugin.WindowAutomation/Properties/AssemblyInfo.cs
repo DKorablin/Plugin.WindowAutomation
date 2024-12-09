@@ -18,5 +18,5 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("Danila Korablin")]
 [assembly: AssemblyProduct("Plugin.WindowAutomation")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2021")]
+[assembly: AssemblyCopyright("Copyright © Danila Korablin 2021-2024")]
 #endif
