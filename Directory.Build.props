@@ -6,8 +6,8 @@
 		<Version>1.0.84.0</Version>
 	</PropertyGroup>
 	<PropertyGroup>
-		<BaseOutputPath>..\bin\</BaseOutputPath>
-		<OutputPath>..\bin\</OutputPath>
-		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\..\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+		<BaseOutputPath>..\..\bin\</BaseOutputPath>
+		<OutputPath>..\..\bin\</OutputPath>
+		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\..\..\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
 	</PropertyGroup>
 </Project>
