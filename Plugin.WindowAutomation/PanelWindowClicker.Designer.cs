@@ -35,7 +35,7 @@
 			this.tsmiProjectImport = new System.Windows.Forms.ToolStripMenuItem();
 			this.pgActions = new System.Windows.Forms.PropertyGrid();
 			this.splitMain = new System.Windows.Forms.SplitContainer();
-			this.lvActions = new Plugin.WindowAutomation.UI.ListViewActions();
+			this.lvActions = new global::Plugin.WindowAutomation.UI.ListViewActions();
 			this.ilActions = new System.Windows.Forms.ImageList(this.components);
 			this.bwClicker = new System.ComponentModel.BackgroundWorker();
 			toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();

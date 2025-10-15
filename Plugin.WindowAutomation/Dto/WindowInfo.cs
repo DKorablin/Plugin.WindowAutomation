@@ -10,22 +10,33 @@ using System.Windows.Forms;
 
 namespace Plugin.WindowAutomation.Dto
 {
+	/// <summary>Provides rich information and helper operations for a native (Win32) window handle.</summary>
 	public class WindowInfo
 	{
+		/// <summary>Well-known native class identifiers.</summary>
 		public enum ClassType
 		{
+			/// <summary>Class name is not mapped to a known constant.</summary>
 			Unknown,
+			/// <summary>Popup menu window (#32768).</summary>
 			Menu,
+			/// <summary>Desktop window (#32769).</summary>
 			Desktop,
+			/// <summary>Standard dialog window (#32770).</summary>
 			Dialog,
+			/// <summary>Alt+Tab task switch window (#32771).</summary>
 			TaskSwitch,
+			/// <summary>Icon title window (#32772).</summary>
 			IconTitle,
 		}
 		private String _className;
+		/// <summary>Gets the native window handle (HWND).</summary>
 		public IntPtr Handle { get; }
 
+		/// <summary>Gets whether the handle is zero (no window).</summary>
 		public Boolean IsEmpty => this.Handle == IntPtr.Zero;
 
+		/// <summary>Gets or sets the visibility of the window using ShowWindow/IsWindowVisible.</summary>
 		public Boolean IsVisible
 		{
 			get => !this.IsEmpty && Native.Window.IsWindowVisible(this.Handle);
@@ -38,6 +49,7 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets or sets the window caption text (uses WM_SETTEXT).</summary>
 		public String Caption
 		{
 			get => this.IsEmpty ? null : Native.Window.GetWindowText(this.Handle);
@@ -54,8 +66,10 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets the full path of the module (executable or DLL) that owns the window.</summary>
 		public String ModuleFileName { get => this.IsEmpty ? null : Native.Window.GetWindowModuleFileName(this.Handle); }
 
+		/// <summary>Gets the cached native class name of the window.</summary>
 		public String ClassName
 		{
 			get
@@ -69,6 +83,7 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets the mapped <see cref="ClassType"/> for well-known native class names.</summary>
 		public ClassType ClassNameType
 		{
 			get
@@ -91,6 +106,7 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets or sets the window rectangle (screen coordinates); setter uses SetWindowPos.</summary>
 		public Rectangle Rect
 		{
 			get => this.IsEmpty ? Rectangle.Empty : Native.Window.GetWindowRect(this.Handle);
@@ -103,6 +119,7 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets the current cursor position translated into this window's client coordinates.</summary>
 		public Point CursorPosition
 		{
 			get
@@ -119,13 +136,16 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Initializes a new instance wrapping the desktop window.</summary>
 		public WindowInfo()
 			: this(Native.Window.GetDesktopWindow())
 		{ }
 
+		/// <summary>Initializes a new instance with a specific window handle.</summary>
 		public WindowInfo(IntPtr hWnd)
 			=> this.Handle = hWnd;
 
+		/// <summary>Initializes a new instance for the smallest child window located at a given screen point.</summary>
 		public WindowInfo(Point point)
 		{
 			this.Handle = IntPtr.Zero;
@@ -147,7 +167,7 @@ namespace Plugin.WindowAutomation.Dto
 			if(!Native.Window.IsChild(Native.Window.GetParent(this.Handle), this.Handle))
 				return;
 
-			// create a list to hold all childs under the point
+			// create a list to hold all children under the point
 			List<IntPtr> windowList = new List<IntPtr>();
 			while(this.Handle != IntPtr.Zero)
 			{
@@ -173,22 +193,29 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Retrieves the live window text using SendMessageTimeout (more reliable than cached caption).</summary>
 		public String GetWindowText()
 		{
 			StringBuilder result = new StringBuilder(256);
 			if(Native.Window.SendMessageTimeoutText(this.Handle, Native.Window.WM.GETTEXT, result.Capacity, result, Native.Window.SMTO.ABORTIFHUNG, 100, out IntPtr dwResult) == 0)
-				throw new Win32Exception();
+			{
+				Int32 errorCode = Marshal.GetLastWin32Error();
+				return errorCode == 0//If the function returns 0, and GetLastError returns ERROR_SUCCESS, then treat it as a generic failure.
+					? String.Empty
+					: throw new Win32Exception();
+			}
 
 			return result.ToString();
 		}
 
+		/// <summary>Sends a window message and throws if it fails.</summary>
 		internal void SendMessage(Native.Window.WM message, IntPtr wParam, IntPtr lParam)
 		{
 			if(Native.Window.SendMessage(this.Handle, message, wParam, lParam) == IntPtr.Zero)
 				throw new Win32Exception();
 		}
 
-		/// <summary>Подсветить рамки окна</summary>
+		/// <summary>Toggles a temporary border highlight by drawing an XOR rectangle on the window DC.</summary>
 		public void ToggleBorder()
 		{
 			if(this.IsEmpty)
@@ -226,11 +253,13 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Gets the owner (parent) window.</summary>
 		public WindowInfo GetParentWindow()
 			=> this.IsEmpty
 				? null
 				: new WindowInfo(Native.Window.GetWindow(this.Handle, Native.Window.GW.OWNER));
 
+		/// <summary>Enumerates direct child windows.</summary>
 		public IEnumerable<WindowInfo> GetChildWindows()
 		{
 			if(this.IsEmpty)
@@ -244,6 +273,7 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
+		/// <summary>Captures a bitmap of this window's bounds using BitBlt; falls back to full desktop if empty.</summary>
 		public Bitmap GetWindowBitmap()
 		{
 			if(this.IsEmpty)
@@ -276,6 +306,7 @@ namespace Plugin.WindowAutomation.Dto
 			return result;
 		}
 
+		/// <summary>Captures a bitmap of the entire virtual desktop across all monitors.</summary>
 		public static Bitmap GetDesktopBitmap()
 		{
 			Rectangle rcScreen = Rectangle.Empty;
@@ -291,7 +322,7 @@ namespace Plugin.WindowAutomation.Dto
 				g.CompositingQuality = CompositingQuality.HighSpeed;
 				g.FillRectangle(SystemBrushes.Desktop, 0, 0, rcScreen.Width - rcScreen.X, rcScreen.Height - rcScreen.Y);
 
-				IntPtr hdcDest = g.GetHdc();
+				IntPtr hdcDestination = g.GetHdc();
 				try
 				{
 					foreach(Screen screen in screens)
@@ -300,11 +331,11 @@ namespace Plugin.WindowAutomation.Dto
 
 						try
 						{
-							Int32 xDest = screen.Bounds.X - rcScreen.X;
-							Int32 yDest = screen.Bounds.Y - rcScreen.Y;
+							Int32 xDestination = screen.Bounds.X - rcScreen.X;
+							Int32 yDestination = screen.Bounds.Y - rcScreen.Y;
 
-							if(!Native.Gdi.StretchBlt(hdcDest,
-								xDest, yDest,
+							if(!Native.Gdi.StretchBlt(hdcDestination,
+								xDestination, yDestination,
 								screen.Bounds.Width, screen.Bounds.Height,
 								hdcSource,
 								0, 0,
@@ -319,12 +350,13 @@ namespace Plugin.WindowAutomation.Dto
 					}
 				} finally
 				{
-					g.ReleaseHdc(hdcDest);
+					g.ReleaseHdc(hdcDestination);
 				}
 			}
 			return result;
 		}
 
+		/// <summary>Gets the large or small icon associated with the window (using WM_GETICON or class icon).</summary>
 		public Bitmap GetWindowIcon(Boolean isLargeIcon)
 		{
 			if(this.IsEmpty)
@@ -362,12 +394,15 @@ namespace Plugin.WindowAutomation.Dto
 				: Bitmap.FromHicon(hIcon);
 		}
 
+		/// <summary>Computes hash code based on the window handle.</summary>
 		public override Int32 GetHashCode()
 			=> this.Handle.GetHashCode();
 
+		/// <summary>Determines equality by comparing underlying handles.</summary>
 		public override Boolean Equals(Object obj)
 			=> obj is WindowInfo wndInfo && this.Handle == wndInfo.Handle;
 
+		/// <summary>Returns a readable string including handle, class, and (trimmed) caption text.</summary>
 		public override String ToString()
 		{
 			ClassType cType = this.ClassNameType;

@@ -18,17 +18,17 @@ namespace Plugin.WindowAutomation.UI
 
 			this._control.Result = (Point)value;
 			((IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService))).DropDownControl(this._control);
-			return this._control.Result; //return base.EditValue(context, provider, value);
+			return this._control.Result;
 		}
 
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-			=> UITypeEditorEditStyle.DropDown; //return base.GetEditStyle(context);
+			=> UITypeEditorEditStyle.DropDown;
 
-		private class PointSelectorControl : UserControl
+		private sealed class PointSelectorControl : UserControl
 		{
-			private Label _lblLocation = new Label();
+			private readonly Label _lblLocation = new Label();
 
-			private TargetWindowCtrl _ctlWindowFinder = new TargetWindowCtrl();
+			private readonly TargetWindowCtrl _ctlWindowFinder = new TargetWindowCtrl();
 
 			public Point Result { get; set; }
 

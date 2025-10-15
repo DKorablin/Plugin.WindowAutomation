@@ -5,7 +5,7 @@ namespace Plugin.WindowAutomation.Native
 {
 	internal static class Mouse
 	{
-		public enum MOUSEEVENTF : int
+		public enum MOUSEEVENTF
 		{
 			/// <summary>mouse move</summary>
 			MOVE = 0x0001,

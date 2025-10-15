@@ -18,13 +18,13 @@ namespace Plugin.WindowAutomation.UI
 
 			this._control.SetStatus((Int32)value);
 			((IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService))).DropDownControl(this._control);
-			return this._control.Result; //return base.EditValue(context, provider, value);
+			return this._control.Result;
 		}
 
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-			=> UITypeEditorEditStyle.DropDown; //return base.GetEditStyle(context);
+			=> UITypeEditorEditStyle.DropDown;
 
-		private class ColumnEditorControl : UserControl
+		private sealed class ColumnEditorControl : UserControl
 		{
 			private readonly CheckedListBox cblColumns = new CheckedListBox();
 
@@ -69,7 +69,7 @@ namespace Plugin.WindowAutomation.UI
 				Int32 counter = 0;
 				for(Int32 loop = 0; loop < bits.Length; loop++)
 				{
-					if(result.Length <= loop)//Увеличиваю массив на один, если не помещается значение
+					if(result.Length <= loop)//Increase the array by one if the value does not fit.
 						Array.Resize<Int32>(ref result, result.Length + 1);
 
 					for(Int32 innerLoop = 0; innerLoop < 32; innerLoop++)

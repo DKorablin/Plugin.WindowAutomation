@@ -5,15 +5,15 @@ using System.IO;
 
 namespace Plugin.WindowAutomation.Dto.Clicker
 {
-	/// <summary>Проект всех действий кликера</summary>
+	/// <summary>Project containing all clicker actions.</summary>
 	internal class ActionsProject
 	{
-		private static Type[] ActionTypes = new Type[] { typeof(ActionKey), typeof(ActionMouse), typeof(ActionText), typeof(ActionMethod), typeof(System.Drawing.Point), };
+		private static readonly Type[] ActionTypes = new Type[] { typeof(ActionKey), typeof(ActionMouse), typeof(ActionText), typeof(ActionMethod), typeof(System.Drawing.Point), };
 
-		/// <summary>Действия для выполнения</summary>
+		/// <summary>Actions to execute.</summary>
 		public List<ActionBase> Actions { get; set; }
 
-		/// <summary>Проверка валидности всех действий</summary>
+		/// <summary>Validate that all actions are valid and list is not empty.</summary>
 		public Boolean IsValid
 		{
 			get
@@ -27,20 +27,20 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 			}
 		}
 
-		/// <summary>Загрузка действий из потока</summary>
-		/// <param name="stream">Поток, из которого загрузить действия</param>
+		/// <summary>Load actions from a stream.</summary>
+		/// <param name="stream">Stream to read serialized actions from.</param>
 		public ActionsProject(Stream stream)
 			=> this.Actions = ActionsProject.Load(stream);
 
-		/// <summary>Загрузить действия из файла с действиями</summary>
-		/// <param name="filePath">Путь к файлу с действиями</param>
+		/// <summary>Load actions from a file.</summary>
+		/// <param name="filePath">Path to a file containing serialized actions.</param>
 		public ActionsProject(String filePath)
 		{
 			using(FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 				this.Actions = ActionsProject.Load(stream);
 		}
 
-		/// <summary>Создать новый проект без действий</summary>
+		/// <summary>Create an empty project with no actions.</summary>
 		public ActionsProject()
 			=> this.Actions = new List<ActionBase>();
 
@@ -52,21 +52,20 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 				if(action.Disabled)
 					continue;
 
-				if(callback != null && callback(action) == false)
+				if(callback != null && !callback(action))
 					return false;
 
-				if(action is ActionMethod)
+				if(action is ActionMethod mAction)
 				{
-					ActionMethod mAction = (ActionMethod)action;
 					try
 					{
 						mAction.Invoke();
 					} catch(Exception exc)
 					{
-						PluginWindows.Trace.TraceData(TraceEventType.Error, 10, exc);
+						Plugin.Trace.TraceData(TraceEventType.Error, 10, exc);
 					}
 
-					if(mAction.Result == false)
+					if(!mAction.Result)
 						return false;
 					else if(loop + 1 == this.Actions.Count)
 						loop = -1;//If last action is runtime method and it returns True, then start from beginning
@@ -78,8 +77,8 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 			return true;
 		}
 
-		/// <summary>Сериализовать действия в строку</summary>
-		/// <returns>JSON с действиями кликера</returns>
+		/// <summary>Serialize actions to JSON string.</summary>
+		/// <returns>JSON containing clicker actions or null if there are none.</returns>
 		public String Serialize()
 			=> this.Actions == null || this.Actions.Count == 0
 				? null

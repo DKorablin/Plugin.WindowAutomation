@@ -19,10 +19,9 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 			get => this._text;
 			set
 			{
-				if(value == null || value.Trim().Length == 0)
-					this._text = null;
-				else
-					this._text = value;
+				this._text = value == null || value.Trim().Length == 0
+					? null
+					: value;
 
 				this._textCodes = null;
 			}

@@ -17,11 +17,11 @@ namespace Plugin.WindowAutomation
 	{
 		private const String Caption = "Window Clicker";
 		private PanelWindowClickerSettings _settings;
-		private StringBuilder _recordText = null;//TODO: Тестовый код для попытки собрать вводимые кнопки в строку
-		private GlobalWindowsHook _keyboardHook = null;
-		private GlobalWindowsHook _mouseHook = null;
+		private StringBuilder _recordText = null;//TODO: Test code to try to assemble the input buttons into a string
+		private GlobalWindowsHookListener _keyboardHook = null;
+		private GlobalWindowsHookListener _mouseHook = null;
 
-		private PluginWindows Plugin => (PluginWindows)this.Window.Plugin;
+		private Plugin Plugin => (Plugin)this.Window.Plugin;
 
 		private IWindow Window => (IWindow)base.Parent;
 
@@ -31,7 +31,7 @@ namespace Plugin.WindowAutomation
 			=> this._settings ?? (this._settings = new PanelWindowClickerSettings());
 
 		public PanelWindowClicker()
-			=> InitializeComponent();
+			=> this.InitializeComponent();
 
 		/// <summary>Clean up any resources being used.</summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -60,8 +60,8 @@ namespace Plugin.WindowAutomation
 			this.Window.SetTabPicture(Resources.Application_Clicker);
 			tsmiActionMethod.Enabled = this.Plugin.Compiler.PluginInstance != null;
 			lvActions.Plugin = this.Plugin;
-			this.Plugin.Settings.PropertyChanged += Settings_PropertyChanged;
-			this.Settings_PropertyChanged(null, new PropertyChangedEventArgs(nameof(PluginSettings.Start)));
+			this.Plugin.Settings.PropertyChanged += this.Settings_PropertyChanged;
+			this.Settings_PropertyChanged(null, new PropertyChangedEventArgs(nameof(WindowAutomation.Settings.Start)));
 
 			this.LoadActions();
 			base.OnCreateControl();
@@ -105,7 +105,7 @@ namespace Plugin.WindowAutomation
 			String filePath = this.Settings.ProjectFileName;
 			if(filePath != null && !File.Exists(filePath))
 			{
-				PluginWindows.Trace.TraceEvent(TraceEventType.Warning, 7, "File {0} not found", filePath);
+				Plugin.Trace.TraceEvent(TraceEventType.Warning, 7, "File {0} not found", filePath);
 				filePath = null;
 			}
 
@@ -119,20 +119,20 @@ namespace Plugin.WindowAutomation
 		{
 			switch(e.PropertyName)
 			{
-			case nameof(PluginSettings.Start):
-			case nameof(PluginSettings.Record):
+			case nameof(WindowAutomation.Settings.Start):
+			case nameof(WindowAutomation.Settings.Record):
 				KeysConverter converter = new KeysConverter();
-				bnActionsRecord.ToolTipText = this.Plugin.Settings.Record == Keys.None
+				this.bnActionsRecord.ToolTipText = this.Plugin.Settings.Record == Keys.None
 					? "Record"
 					: String.Format("Record ({0})", converter.ConvertToString(this.Plugin.Settings.Record));
-				bnActionsStart.ToolTipText = this.Plugin.Settings.Start == Keys.None
+				this.bnActionsStart.ToolTipText = this.Plugin.Settings.Start == Keys.None
 					? "Start"
 					: String.Format("Start ({0})", converter.ConvertToString(this.Plugin.Settings.Start));
 
 				if(this.Plugin.Settings.Start != Keys.None || this.Plugin.Settings.Record != Keys.None)
 				{
 					if(this._keyboardHook == null)
-						this._keyboardHook = new GlobalWindowsHook(_keyboardHook_WindowsKeysPressed);
+						this._keyboardHook = new GlobalWindowsHookListener(this.keyboardHook_WindowsKeysPressed);
 				} else
 				{
 					if(this._keyboardHook != null)
@@ -145,20 +145,20 @@ namespace Plugin.WindowAutomation
 			}
 		}
 
-		private void _keyboardHook_WindowsKeysPressed(Object sender, GlobalWindowsHook.KeyEventArgs2 e)
+		private void keyboardHook_WindowsKeysPressed(Object sender, GlobalWindowsHookListener.KeyEventArgs2 e)
 		{
 			if(e.Click == Input.ClickFlags.Up)
 				switch(e.KeyData)
 				{
 				case Keys.Alt | Keys.Tab:
-					break;//Alt+Tab приходят только в виде KeyUp
+					break;//Alt+Tab only comes as KeyUp
 				default:
 					return;
 				}
 
 			if(base.InvokeRequired)
 			{
-				base.Invoke((MethodInvoker)delegate { this._keyboardHook_WindowsKeysPressed(sender, e); });
+				base.Invoke((MethodInvoker)delegate { this.keyboardHook_WindowsKeysPressed(sender, e); });
 				return;
 			}
 
@@ -168,17 +168,14 @@ namespace Plugin.WindowAutomation
 				bnActionsRecord.Checked = recordState;
 				this.bnActionsRecord_Click(sender, e);
 
-				PluginWindows.Trace.TraceInformation("{0} recording", recordState ? "Start" : "Stop");
-			} else if(bnActionsRecord.Checked)//Запись в приоритете
+				Plugin.Trace.TraceInformation("{0} recording", recordState ? "Start" : "Stop");
+			} else if(bnActionsRecord.Checked)//Priority recording
 			{
 				if(!Input.IsExtendedKey(e.KeyCode))
 				{
 					String data = Input.KeyCodeToChar(e.KeyData);
 					if(!String.IsNullOrEmpty(data))
 						this._recordText.Append(data);
-				} else
-				{
-
 				}
 
 				switch(e.KeyData)
@@ -194,29 +191,29 @@ namespace Plugin.WindowAutomation
 				case Keys.Shift | Keys.RShiftKey:
 				case Keys.LShiftKey:
 				case Keys.RShiftKey:
-					break;//Отсекаю фантомные комбинации
+					break;//I cut off phantom combinations
 				default:
-					ActionKey action = new ActionKey() { Key = e.KeyData };//TODO: Если происходит ввод нескольких символов, то надо преобразовывать в ActionText
+					ActionKey action = new ActionKey() { Key = e.KeyData };//TODO: If multiple characters are entered, it must be converted to ActionText.
 					lvActions.AddAction(action);
 					break;
 				}
-			} else if(e.KeyData == this.Plugin.Settings.Start)//Запуск созданного процесса
+			} else if(e.KeyData == this.Plugin.Settings.Start)//Launching the created process
 			{
 				Boolean runState = !bnActionsStart.Checked;
 				bnActionsStart.Checked = runState;
 				this.bnActionsRun_CheckedChanged(sender, e);
-				PluginWindows.Trace.TraceInformation("{0} clicker", runState ? "Starting" : "Stopping");
+				Plugin.Trace.TraceInformation("{0} clicker", runState ? "Starting" : "Stopping");
 			}
 		}
 
-		private void _mouseHook_WindowsMouseClicked(Object sender, GlobalWindowsHook.MouseEventArgs2 e)
+		private void mouseHook_WindowsMouseClicked(Object sender, GlobalWindowsHookListener.MouseEventArgs2 e)
 		{
 			if(e.Click == Input.ClickFlags.Up)
 				return;
 
 			if(base.InvokeRequired)
 			{
-				base.Invoke((MethodInvoker)delegate { this._mouseHook_WindowsMouseClicked(sender, e); });
+				base.Invoke((MethodInvoker)delegate { this.mouseHook_WindowsMouseClicked(sender, e); });
 				return;
 			}
 
@@ -252,7 +249,7 @@ namespace Plugin.WindowAutomation
 
 		private void bnActionRemove_Click(Object sender, EventArgs e)
 		{
-			if(MessageBox.Show("Are you shure you want to delete selected items?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			if(MessageBox.Show("Are you sure you want to delete selected items?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				while(lvActions.SelectedItems.Count > 0)
 					lvActions.RemoveAction(lvActions.SelectedItems[0]);
 		}
@@ -277,8 +274,8 @@ namespace Plugin.WindowAutomation
 			if(bnActionsRecord.Checked)
 			{
 				this._recordText = new StringBuilder();
-				if(this._mouseHook == null)//Это можно делать только в UI Thread'е, иначе не будут приходить события от нажатия мыши
-					this._mouseHook = new GlobalWindowsHook(_mouseHook_WindowsMouseClicked);
+				if(this._mouseHook == null)//This can only be done on the UI Thread, otherwise mouse click events will not be received.
+					this._mouseHook = new GlobalWindowsHookListener(this.mouseHook_WindowsMouseClicked);
 				this.SetWindowCaption(bnActionsRecord);
 			} else
 			{
@@ -295,7 +292,7 @@ namespace Plugin.WindowAutomation
 				if(bwClicker.IsBusy)
 				{
 					bnActionsStart.Checked = false;
-					PluginWindows.Trace.TraceInformation("Clicker is busy");
+					Plugin.Trace.TraceInformation("Clicker is busy");
 					return;
 				}
 
@@ -331,7 +328,6 @@ namespace Plugin.WindowAutomation
 				});
 
 			e.Result = result;
-			return;
 
 			/*for(Int32 loop = 0; loop < project.Actions.Count; loop++)
 			{
@@ -387,7 +383,7 @@ namespace Plugin.WindowAutomation
 		private void bwClicker_RunWorkerCompleted(Object sender, RunWorkerCompletedEventArgs e)
 		{
 			if(e.Error != null)
-				PluginWindows.Trace.TraceData(TraceEventType.Error, 10, e.Error);
+				Plugin.Trace.TraceData(TraceEventType.Error, 10, e.Error);
 
 			if(e.Cancelled || e.Result == null)
 			{
@@ -402,26 +398,26 @@ namespace Plugin.WindowAutomation
 				return;
 
 			//if(e.KeyData == this.Plugin.Settings.Record || e.KeyData == this.Plugin.Settings.Start)
-			//	return;//Дабы не пересекались с шорткатами запуска процесса
+			//	return;//So as not to interfere with the process launch shortcuts
 
 			switch(e.KeyData)
 			{
 			case Keys.Control | Keys.Z:
-				if(MessageBox.Show("Are you shure you want to revert actions to last saved state?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				if(MessageBox.Show("Are you sure you want to revert actions to last saved state?", this.Window.Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					this.LoadActions();
 				e.Handled = true;
 				break;
 			case Keys.R:
 			case Keys.L:
-				if(!(pgActions.SelectedObject is ActionMouse action))
-					return;
-
-				action.Button = e.KeyCode == Keys.R
-					? MouseButtons.Right
-					: MouseButtons.Left;
-				action.Location = Cursor.Position;
-				lvActions.UpdateAction(lvActions.SelectedItems[0], action);
-				e.Handled = true;
+				if(pgActions.SelectedObject is ActionMouse action)
+				{
+					action.Button = e.KeyCode == Keys.R
+						? MouseButtons.Right
+						: MouseButtons.Left;
+					action.Location = Cursor.Position;
+					lvActions.UpdateAction(lvActions.SelectedItems[0], action);
+					e.Handled = true;
+				}
 				break;
 			case Keys.Delete:
 				this.bnActionRemove_Click(sender, e);
@@ -460,12 +456,11 @@ namespace Plugin.WindowAutomation
 					if(dlg.ShowDialog() == DialogResult.OK)
 						if(dlg.FileName == this.Settings.ProjectFileName)
 							this.Settings.ProjectFileName = dlg.FileName;
-						else
-							if(this.Plugin.CreateWindow(
+						else if(this.Plugin.CreateWindow(
 								typeof(PanelWindowClicker).ToString(),
 								true,
 								new PanelWindowClickerSettings() { ProjectFileName = dlg.FileName }) == null)
-							PluginWindows.Trace.TraceEvent(TraceEventType.Warning, 1, "Error opening window");
+							Plugin.Trace.TraceEvent(TraceEventType.Warning, 1, "Error opening window");
 			} else if(e.ClickedItem == tsmiProjectExport)
 				lvActions.SaveProjectToFile();
 			else if(e.ClickedItem == tsmiProjectImport)

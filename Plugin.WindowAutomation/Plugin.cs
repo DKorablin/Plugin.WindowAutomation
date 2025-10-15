@@ -1,43 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Plugin.WindowAutomation.Native;
 using Plugin.WindowAutomation.Plugins;
 using SAL.Flatbed;
 using SAL.Windows;
 
 namespace Plugin.WindowAutomation
 {
-	public class PluginWindows : IPlugin, IPluginSettings<PluginSettings>
+	public class Plugin : IPlugin, IPluginSettings<Settings>
 	{
-		internal static PluginWindows Instance;//HACK
+		internal static Plugin Instance;//HACK
 		private static TraceSource _trace;
-		private PluginSettings _settings;
+		private Settings _settings;
 		private IMenuItem _menuWinApi;
 		private IMenuItem _menuWindowFinder;
 		private IMenuItem _menuWindowClicker;
 		private Dictionary<String, DockState> _documentTypes;
 
+		private GlobalWindowsHookAntiDebounce _antiDebounceHook;
+
 		internal IHostWindows HostWindows { get; }
+
 		internal CompilerPlugin Compiler { get; private set; }
 
-		/// <summary>Настройки для взаимодействия из хоста</summary>
+		/// <summary>Settings for interaction from the host</summary>
 		Object IPluginSettings.Settings => this.Settings;
 
-		/// <summary>Настройки для взаимодействия из плагина</summary>
-		public PluginSettings Settings
+		/// <summary>Settings for interaction from the plugin</summary>
+		public Settings Settings
 		{
 			get
 			{
 				if(this._settings == null)
 				{
-					this._settings = new PluginSettings(this);
+					this._settings = new Settings(this);
 					this.HostWindows.Plugins.Settings(this).LoadAssemblyParameters(this._settings);
+					this._settings.PropertyChanged += this.Settings_PropertyChanged;
 				}
 				return this._settings;
 			}
 		}
 
-		internal static TraceSource Trace => _trace ?? (_trace = PluginWindows.CreateTraceSource<PluginWindows>());
+		internal static TraceSource Trace => _trace ?? (_trace = Plugin.CreateTraceSource<Plugin>());
 
 		private Dictionary<String, DockState> DocumentTypes
 		{
@@ -53,10 +58,10 @@ namespace Plugin.WindowAutomation
 			}
 		}
 
-		public PluginWindows(IHostWindows hostWindows)
+		public Plugin(IHostWindows hostWindows)
 		{
 			this.HostWindows = hostWindows ?? throw new ArgumentNullException(nameof(hostWindows));
-			PluginWindows.Instance = this;
+			Plugin.Instance = this;
 		}
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
@@ -66,11 +71,12 @@ namespace Plugin.WindowAutomation
 			IMenuItem menuTools = this.HostWindows.MainMenu.FindMenuItem("Tools");
 			if(menuTools == null)
 			{
-				PluginWindows.Trace.TraceEvent(TraceEventType.Error, 10, "Menu item 'Tools' not found");
+				Plugin.Trace.TraceEvent(TraceEventType.Error, 10, "Menu item 'Tools' not found");
 				return false;
 			}
 
-			this.HostWindows.Plugins.PluginsLoaded += Host_PluginsLoaded;
+			this.HostWindows.Plugins.PluginsLoaded += this.Host_PluginsLoaded;
+			this.Settings_PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(WindowAutomation.Settings.AntiDebounceHookType)));
 
 			this._menuWinApi = menuTools.FindMenuItem("WinAPI");
 			if(this._menuWinApi == null)
@@ -98,11 +104,27 @@ namespace Plugin.WindowAutomation
 				this.HostWindows.MainMenu.Items.Remove(this._menuWindowClicker);
 			if(this._menuWinApi != null && this._menuWinApi.Items.Count == 0)
 				this.HostWindows.MainMenu.Items.Remove(this._menuWinApi);
+
+			this._antiDebounceHook?.Dispose();
 			return true;
 		}
 
 		private void Host_PluginsLoaded(Object sender, EventArgs e)
 			=> this.Compiler = new CompilerPlugin(this);
+
+		private void Settings_PropertyChanged(Object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			switch(e.PropertyName)
+			{
+			case nameof(WindowAutomation.Settings.AntiDebounceHookType):
+				this._antiDebounceHook?.Dispose();
+				this._antiDebounceHook = null;
+
+				if(this.Settings.AntiDebounceHookType != Dto.HookType.None)
+					this._antiDebounceHook = new GlobalWindowsHookAntiDebounceWithTrace(this.Settings.AntiDebounceHookType, (UInt32)this.Settings.AntiDebounceThresholdMs);
+				break;
+			}
+		}
 
 		internal IWindow CreateWindow(String typeName, Boolean searchForOpened, Object args = null)
 			=> this.DocumentTypes.TryGetValue(typeName, out DockState state)
@@ -118,15 +140,15 @@ namespace Plugin.WindowAutomation
 			return result;
 		}
 
-		/// <summary>Получить уникальное наименование метода для нового таймера</summary>
-		/// <returns>Уникальное наименование метода</returns>
+		/// <summary>Get a unique method name for the new timer</summary>
+		/// <returns>Unique method name</returns>
 		public String GetUniqueMethodName()
 		{
 			const String ConstMethodName = "WindowClicker";
 			String methodName = ConstMethodName;
 			UInt32 count = 1;
-			String[] methods = Compiler.GetMethods();
-			while(Array.Exists(methods, (item) => { return item == methodName; }))
+			String[] methods = this.Compiler.GetMethods();
+			while(Array.Exists(methods, item => item == methodName))
 				methodName = String.Join("_", new String[] { ConstMethodName, (count++).ToString(), });
 
 			return methodName;

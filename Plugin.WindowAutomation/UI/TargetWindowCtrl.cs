@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Plugin.WindowAutomation.UI
@@ -33,14 +30,14 @@ namespace Plugin.WindowAutomation.UI
 		{
 			this.imageList = new ImageList
 			{
-				ImageStream = Plugin.WindowAutomation.Properties.Resources.imageList_ImageStream,
+				ImageStream = global::Plugin.WindowAutomation.Properties.Resources.imageList_ImageStream,
 				TransparentColor = System.Drawing.Color.Transparent
 			};
 			this.imageList.Images.SetKeyName(0, String.Empty);
 			this.imageList.Images.SetKeyName(1, String.Empty);
 
 			base.Cursor = Cursors.Hand;
-			base.Image = Plugin.WindowAutomation.Properties.Resources.Icon1;
+			base.Image = global::Plugin.WindowAutomation.Properties.Resources.Icon1;
 			base.Size = new System.Drawing.Size(31, 28);
 			base.SizeMode = PictureBoxSizeMode.AutoSize;
 		}

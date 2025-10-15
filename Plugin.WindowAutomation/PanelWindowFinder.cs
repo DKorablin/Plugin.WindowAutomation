@@ -13,10 +13,8 @@ namespace Plugin.WindowAutomation
 	{
 		private WindowInfo _lastWindow = new WindowInfo(IntPtr.Zero);
 
-		#region Properties
-		private PluginWindows Plugin { get { return (PluginWindows)this.Window.Plugin; } }
-		private IWindow Window { get { return (IWindow)base.Parent; } }
-		#endregion Properties
+		private Plugin Plugin { get => (Plugin)this.Window.Plugin; }
+		private IWindow Window { get => (IWindow)base.Parent; }
 
 		public PanelWindowFinder()
 		{
@@ -32,9 +30,9 @@ namespace Plugin.WindowAutomation
 
 			this.tsbnWindowsRefresh_Click(null, null);
 			base.OnCreateControl();
-			ctlWindowFinder.Searching += ctlWindowFinder_Searching;
-			ctlWindowFinder.SearchCancelled += ctlWindowFinder_SearchCancelled;
-			ctlWindowFinder.SearchFinished += ctlWindowFinder_SearchFinished;
+			ctlWindowFinder.Searching += this.ctlWindowFinder_Searching;
+			ctlWindowFinder.SearchCancelled += this.ctlWindowFinder_SearchCancelled;
+			ctlWindowFinder.SearchFinished += this.ctlWindowFinder_SearchFinished;
 		}
 
 		private void tsbnWindowsRefresh_Click(Object sender, EventArgs e)
@@ -83,7 +81,7 @@ namespace Plugin.WindowAutomation
 				tabMain.TabPages.Remove(tabAutomate);
 		}
 
-		/// <summary>Show informations about the given window</summary>
+		/// <summary>Show information about the given window</summary>
 		/// <param name="window"></param>
 		private void DisplayWindowInfo(WindowInfo window)
 		{
@@ -136,9 +134,7 @@ namespace Plugin.WindowAutomation
 		}
 
 		private void ctlWindowFinder_SearchCancelled(Object sender, MouseEventArgs e)
-		{
-			this.ClearSelectedWindow();
-		}
+			=> this.ClearSelectedWindow();
 
 		private void ctlWindowFinder_SearchFinished(Object sender, EventArgs e)
 		{
@@ -160,7 +156,7 @@ namespace Plugin.WindowAutomation
 			}
 		}
 
-		/// <summary>Удалить выделение окна</summary>
+		/// <summary>Remove window selection</summary>
 		private void ClearSelectedWindow()
 		{
 			// reset all done things from mouse_down and mouse_move ...
@@ -221,7 +217,7 @@ namespace Plugin.WindowAutomation
 		{
 			this.PopulateWindowsChildNodes(root);
 			foreach(TreeNode node in root.Nodes)
-				if(node.Tag.Equals(wnd))
+				if(node.Tag?.Equals(wnd) == true)
 					return node;
 				else
 				{

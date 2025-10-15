@@ -5,7 +5,7 @@ namespace Plugin.WindowAutomation.Native
 {
 	internal static class Gdi
 	{
-		public enum RopMode : Int32
+		public enum RopMode
 		{
 			R2_NOT = 6
 		}
@@ -13,7 +13,7 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("gdi32.dll")]
 		public static extern Int32 SetROP2(IntPtr hdc, Int32 fnDrawMode);
 
-		public enum PenStyles : Int32
+		public enum PenStyles
 		{
 			PS_INSIDEFRAME = 6
 		}
@@ -22,10 +22,10 @@ namespace Plugin.WindowAutomation.Native
 		public static extern IntPtr CreatePen(Int32 fnPenStyle, Int32 nWidth, UInt32 crColor);
 
 		[DllImport("gdi32.dll")]
-		public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+		public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hGdiObj);
 
 		/// <summary>The type of stock object</summary>
-		public enum StockObjects : Int32
+		public enum StockObjects
 		{
 			WHITE_BRUSH = 0,
 			LTGRAY_BRUSH = 1,

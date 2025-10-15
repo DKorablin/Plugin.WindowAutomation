@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing.Design;
+using Plugin.WindowAutomation.Plugins;
 using Plugin.WindowAutomation.UI;
 
 namespace Plugin.WindowAutomation.Dto.Clicker
@@ -10,8 +11,8 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 		internal class MethodFake : ActionBase
 		{
 			[DisplayName("Method Name")]
-			[Description("Наименование метода, вызываемого во время выполнения")]
-			public String MethodName { get { return "Plugin.Compiler not loaded"; } }
+			[Description("The name of the method called at runtime")]
+			public String MethodName { get { return $"Plugin.Compiler (ID={CompilerPlugin.Name}) not loaded"; } }
 
 			[Description("To access this action you have to add Plugin.Compiler")]
 			public override Boolean IsValid => false;
@@ -22,7 +23,7 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 
 		[Editor(typeof(CompilerMethodEditor), typeof(UITypeEditor))]
 		[DisplayName("Method Name")]
-		[Description("Наименование метода, вызываемого во время выполнения")]
+		[Description("The name of the method called at runtime")]
 		public String MethodName { get; set; }
 
 		[DefaultValue(false)]
@@ -31,12 +32,12 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 
 		public override Boolean IsValid
 			=> !String.IsNullOrEmpty(this.MethodName)
-				&& PluginWindows.Instance.Compiler.IsMethodExists(this.MethodName);
+				&& Plugin.Instance.Compiler.IsMethodExists(this.MethodName);
 
 		public override void Invoke()
 		{
 			this.Result = false;//In case of exception
-			this.Result = (Boolean)PluginWindows.Instance.Compiler.InvokeDynamicMethod(this.MethodName);
+			this.Result = (Boolean)Plugin.Instance.Compiler.InvokeDynamicMethod(this.MethodName);
 		}
 	}
 }

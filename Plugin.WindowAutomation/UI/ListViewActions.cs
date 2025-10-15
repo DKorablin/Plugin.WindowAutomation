@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using AlphaOmega.Windows.Forms;
 using Plugin.WindowAutomation.Dto.Clicker;
@@ -20,9 +19,9 @@ namespace Plugin.WindowAutomation.UI
 
 		private ActionsProject _project;
 
-		private ColumnHeader colActionName;
-		private ColumnHeader colActionData;
-		private ColumnHeader colActionTimeout;
+		private readonly ColumnHeader colActionName = new ColumnHeader() { Text = "Name" };
+		private readonly ColumnHeader colActionData = new ColumnHeader() { Text = "Data" };
+		private readonly ColumnHeader colActionTimeout = new ColumnHeader() { Text = "Timeout" };
 
 		public ActionsProject Project
 		{
@@ -38,14 +37,10 @@ namespace Plugin.WindowAutomation.UI
 
 		public event EventHandler<EventArgs> DirtyChanged;
 
-		public PluginWindows Plugin { get; set; }
+		public Plugin Plugin { get; set; }
 
 		public ListViewActions()
 		{
-			this.colActionName = new ColumnHeader() { Text = "Name" };
-			this.colActionTimeout = new ColumnHeader() { Text = "Timeout" };
-			this.colActionData = new ColumnHeader() { Text = "Data" };
-
 			this.IsEnabled = true;
 			base.AllowDrop = true;
 			base.FullRowSelect = true;
@@ -92,7 +87,7 @@ namespace Plugin.WindowAutomation.UI
 		{
 			this.Project = filePath == null
 				? this.Plugin.Settings.ClickerActions
-				: new ActionsProject(FilePath);
+				: new ActionsProject(this.FilePath);
 
 			base.Items.Clear();
 			if(this.Project.Actions.Count > 0)
@@ -141,27 +136,23 @@ namespace Plugin.WindowAutomation.UI
 		private void PopulateListItemAction(ListViewItem item, ActionBase baseAction)
 		{
 			item.Tag = baseAction;
-			if(baseAction is ActionKey)
+			if(baseAction is ActionKey keyAction)
 			{
-				ActionKey action = (ActionKey)baseAction;
 				KeysConverter converter = new KeysConverter();
-				item.SubItems[colActionName.Index].Text = converter.ConvertToString(action.Key);
+				item.SubItems[colActionName.Index].Text = converter.ConvertToString(keyAction.Key);
 				item.SubItems[colActionData.Index].Text = String.Empty;
-			} else if(baseAction is ActionMouse)
+			} else if(baseAction is ActionMouse mouseAction)
 			{
-				ActionMouse action = (ActionMouse)baseAction;
-				item.SubItems[colActionName.Index].Text = String.Format("{0}x {1} {2}", action.Repeat, action.Button, action.Location);
-			} else if(baseAction is ActionText)
+				item.SubItems[colActionName.Index].Text = $"{mouseAction.Repeat}x {mouseAction.Button} {mouseAction.Location}";
+			} else if(baseAction is ActionText textAction)
 			{
-				ActionText action = (ActionText)baseAction;
-				item.SubItems[colActionName.Index].Text = String.Format("String[{0:N0}]", action.Text == null ? 0 : action.Text.Length);
+				item.SubItems[colActionName.Index].Text = String.Format("String[{0:N0}]", textAction.Text == null ? 0 : textAction.Text.Length);
 
-				String text = action.Text == null ? String.Empty : action.Text;
+				String text = textAction.Text == null ? String.Empty : textAction.Text;
 				item.SubItems[colActionName.Index].Text = text.Length < 50 ? text : text.Substring(0, 50) + "...";
-			} else if(baseAction is ActionMethod)
+			} else if(baseAction is ActionMethod methodAction)
 			{
-				ActionMethod action = (ActionMethod)baseAction;
-				item.SubItems[colActionName.Index].Text = action.MethodName;
+				item.SubItems[colActionName.Index].Text = methodAction.MethodName;
 			} else
 				item.SubItems[colActionName.Index].Text = baseAction.ToString();
 
@@ -224,17 +215,17 @@ namespace Plugin.WindowAutomation.UI
 			base.OnItemDrag(e);
 		}
 
-		protected override void OnDragEnter(DragEventArgs e)
+		protected override void OnDragEnter(DragEventArgs drgevent)
 		{
-			e.Effect = e.Data.GetDataPresent(typeof(ActionBase[])) ? DragDropEffects.Move : DragDropEffects.None;
-			base.OnDragEnter(e);
+			drgevent.Effect = drgevent.Data.GetDataPresent(typeof(ActionBase[])) ? DragDropEffects.Move : DragDropEffects.None;
+			base.OnDragEnter(drgevent);
 		}
 
-		protected override void OnDragDrop(DragEventArgs e)
+		protected override void OnDragDrop(DragEventArgs drgevent)
 		{
-			Point pos = base.PointToClient(new Point(e.X, e.Y));
+			Point pos = base.PointToClient(new Point(drgevent.X, drgevent.Y));
 			ListViewHitTestInfo hit = base.HitTest(pos);
-			if(hit.Item != null && hit.Item.Selected == false)
+			if(hit.Item != null && !hit.Item.Selected)
 			{
 				ListViewItem[] items = new ListViewItem[base.SelectedItems.Count];
 				Int32 index = hit.Item.Index;
@@ -253,7 +244,7 @@ namespace Plugin.WindowAutomation.UI
 				this.ToggleDirty(true);
 			}
 
-			base.OnDragDrop(e);
+			base.OnDragDrop(drgevent);
 		}
 	}
 }

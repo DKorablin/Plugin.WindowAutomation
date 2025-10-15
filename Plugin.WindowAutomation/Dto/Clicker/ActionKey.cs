@@ -12,7 +12,7 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 	{//https://github.com/michaelnoonan/inputsimulator/blob/a61df64303cb76b005a3ced19eae4cb4755e2e42/WindowsInput/InputBuilder.cs
 		[DefaultValue(Input.ClickFlags.Down | Input.ClickFlags.Up)]
 		[Editor(typeof(ColumnEditor<Input.ClickFlags>), typeof(UITypeEditor))]
-		[Description("Button action: press, unpress or click")]
+		[Description("Button action: press, release or click")]
 		public Input.ClickFlags Click { get; set; } = Input.ClickFlags.Down | Input.ClickFlags.Up;
 
 		[Description("Key combination to emulate")]

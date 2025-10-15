@@ -53,7 +53,7 @@
 			this.cbAutomationPattern = new System.Windows.Forms.ComboBox();
 			this.txtModuleName = new System.Windows.Forms.TextBox();
 			this.gridSearch = new AlphaOmega.Windows.Forms.SearchGrid();
-			this.ctlWindowFinder = new Plugin.WindowAutomation.UI.TargetWindowCtrl();
+			this.ctlWindowFinder = new global::Plugin.WindowAutomation.UI.TargetWindowCtrl();
 			lblRect = new System.Windows.Forms.Label();
 			lblCaption = new System.Windows.Forms.Label();
 			lblModuleName = new System.Windows.Forms.Label();
@@ -251,9 +251,9 @@
 			this.gridSearch.DataGrid = null;
 			this.gridSearch.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.gridSearch.EnableFindCase = true;
-			this.gridSearch.EnableFindHilight = true;
+			this.gridSearch.EnableFindHighlight = true;
 			this.gridSearch.EnableFindPrevNext = true;
-			this.gridSearch.EnableSearchHilight = false;
+			this.gridSearch.EnableSearchHighlight = false;
 			this.gridSearch.ListView = null;
 			this.gridSearch.Location = new System.Drawing.Point(3, 155);
 			this.gridSearch.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);

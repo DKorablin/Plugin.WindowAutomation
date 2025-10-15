@@ -7,7 +7,7 @@ namespace Plugin.WindowAutomation.Native
 	internal static class Hook
 	{
 		/// <summary>Enumerates the valid hook types passed as the idHook parameter into a call to SetWindowsHookEx.</summary>
-		public enum WH : Int32
+		public enum WH
 		{
 			/// <summary>Installs a hook procedure that monitors messages generated as a result of an input event in a dialog box, message box, menu, or scroll bar.</summary>
 			/// <see>For more information, see the MessageProc hook procedure.</see>
@@ -60,7 +60,7 @@ namespace Plugin.WindowAutomation.Native
 			KEYBOARD_LL = 13,
 			/// <summary>Installs a hook procedure that monitors low-level mouse input events.</summary>
 			/// <see>For more information, see the LowLevelMouseProc hook procedure.</see>
-			MOUSE_LL = 14
+			MOUSE_LL = 14,
 		}
 
 		[StructLayout(LayoutKind.Sequential)]

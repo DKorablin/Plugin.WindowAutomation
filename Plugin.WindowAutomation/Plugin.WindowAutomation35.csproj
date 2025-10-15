@@ -74,6 +74,8 @@
     <Compile Include="Dto\Clicker\ActionsProject.cs" />
     <Compile Include="Dto\Clicker\ActionText.cs" />
     <Compile Include="Dto\WindowInfo.cs" />
+    <Compile Include="Native\GlobalWindowsHookBase.cs" />
+    <Compile Include="Native\GlobalWindowsHookKeyboardAntiChatter.cs" />
     <Compile Include="Native\Hook.cs" />
     <Compile Include="Native\Input.cs" />
     <Compile Include="PanelWindowClicker.cs">
@@ -103,7 +105,7 @@
     <Compile Include="Serializers.cs" />
     <Compile Include="UI\ColumnEditor.cs" />
     <Compile Include="UI\CompilerMethodEditor.cs" />
-    <Compile Include="Native\GlobalWindowsHook.cs" />
+    <Compile Include="Native\GlobalWindowsHookListener.cs" />
     <Compile Include="UI\ListViewActions.cs">
       <SubType>Component</SubType>
     </Compile>

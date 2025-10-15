@@ -1,6 +1,6 @@
 [submodule "Images.Shared"]
 	path = Images.Shared
-	url = https://DKorablin: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@github.com/DKorablin/Images.Shared.git
+	url = https://DKorablin@github.com/DKorablin/Images.Shared.git
 [submodule "WinForms.Shared"]
 	path = WinForms.Shared
-	url = https://DKorablin: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@github.com/DKorablin/WinForms.Shared.git
+	url = https://DKorablin@github.com/DKorablin/WinForms.Shared.git

@@ -9,7 +9,7 @@ namespace Plugin.WindowAutomation.Native
 	{
 		/// <summary>Тип нажатия</summary>
 		[Flags]
-		public enum ClickFlags : Int32
+		public enum ClickFlags
 		{
 			/// <summary>Нажать на кнопку</summary>
 			Down = 0x1,
@@ -431,9 +431,7 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern Int32 SetCursorPos(Int32 x, Int32 y);
 
-		/// <summary>
-		/// Determines if the <see cref="Keys"/> is an ExtendedKey
-		/// </summary>
+		/// <summary>Determines if the <see cref="Keys"/> is an ExtendedKey</summary>
 		/// <param name="keyCode">The key code.</param>
 		/// <returns>true if the key code is an extended key; otherwise, false.</returns>
 		/// <remarks>
@@ -480,8 +478,8 @@ namespace Plugin.WindowAutomation.Native
 		/// <exception cref="Exception">If the any of the commands in the <paramref name="inputs"/> array could not be sent successfully.</exception>
 		public static void DispatchInput(params INPUT[] inputs)
 		{
-			UInt32 sendedInputs = Input.SendInput((UInt32)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
-			if(sendedInputs != inputs.Length)
+			UInt32 sentInputs = Input.SendInput((UInt32)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
+			if(sentInputs != inputs.Length)
 				throw new ArgumentException("Some simulated input commands were not sent successfully. The most common reason for this happening are the security features of Windows including User Interface Privacy Isolation (UIPI). Your application can only send commands to applications of the same or lower elevation. Similarly certain commands are restricted to Accessibility/UIAutomation applications. Refer to the project home page and the code samples for more information.");
 		}
 

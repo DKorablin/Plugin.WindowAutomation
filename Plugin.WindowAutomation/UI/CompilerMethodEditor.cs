@@ -11,11 +11,11 @@ namespace Plugin.WindowAutomation.UI
 		private IWindowsFormsEditorService _editorService;
 
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-			=> UITypeEditorEditStyle.DropDown; //base.GetEditStyle(context);
+			=> UITypeEditorEditStyle.DropDown;
 
 		public override Object EditValue(ITypeDescriptorContext context, IServiceProvider provider, Object value)
 		{
-			_editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+			this._editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 
 			// use a list box
 			ListBox lb = new ListBox()
@@ -24,9 +24,9 @@ namespace Plugin.WindowAutomation.UI
 				DisplayMember = "Key",
 				ValueMember = "Value",
 			};
-			lb.SelectedValueChanged += OnListBoxSelectedValueChanged;
+			lb.SelectedValueChanged += (sender, e) => this._editorService.CloseDropDown();// close the drop down as soon as something is clicked
 
-			foreach(String item in PluginWindows.Instance.Compiler.GetMethods())
+			foreach(String item in Plugin.Instance.Compiler.GetMethods())
 			{
 				Int32 index = lb.Items.Add(item);
 				if(item.Equals(value))
@@ -36,21 +36,18 @@ namespace Plugin.WindowAutomation.UI
 			Int32 newItemIndex = lb.Items.Add("Add...");
 
 			// show this model stuff
-			_editorService.DropDownControl(lb);
+			this._editorService.DropDownControl(lb);
 
 			String result = (String)lb.SelectedItem;
 			if(result == null)
 				return value;
 
 			result = lb.SelectedIndex == newItemIndex
-				? PluginWindows.Instance.GetUniqueMethodName()
+				? Plugin.Instance.GetUniqueMethodName()
 				: result;
-			PluginWindows.Instance.Compiler.CreateCompilerWindow(result, null);
+			Plugin.Instance.Compiler.CreateCompilerWindow(result, null);
 
 			return result;
 		}
-
-		private void OnListBoxSelectedValueChanged(Object sender, EventArgs e)
-			=> _editorService.CloseDropDown();// close the drop down as soon as something is clicked
 	}
 }

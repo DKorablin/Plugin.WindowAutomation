@@ -9,58 +9,98 @@ namespace Plugin.WindowAutomation.Native
 {
 	internal static class Window
 	{
-		public enum WM : Int32
+		public enum WM
 		{
 			/// <summary>Copies the text that corresponds to a window into a buffer provided by the caller.</summary>
 			GETTEXT = 0x000D,
 			/// <summary>Sets the text of a window.</summary>
 			SETTEXT = 0x000C,
-			/// <summary>
-			/// Sent to a window to retrieve a handle to the large or small icon associated with a window.
-			/// The system displays the large icon in the ALT+TAB dialog, and the small icon in the window caption.
-			/// </summary>
+			/// <summary>Sent to a window to retrieve a handle to the large or small icon associated with a window.</summary>
+			/// <remarks>The system displays the large icon in the ALT+TAB dialog, and the small icon in the window caption.</remarks>
 			GETICON = 0x007F,
 			/// <summary>
 			/// Sent to a minimized (iconic) window.
 			/// The window is about to be dragged by the user but does not have an icon defined for its class.
+			/// </summary>
+			/// <remarks>
 			/// An application can return a handle to an icon or cursor.
 			/// The system displays this cursor or icon while the user drags the icon.
-			/// </summary>
+			/// </remarks>
 			QUERYDRAGICON = 0x0037,
-			/// <summary>
-			/// Posted to the window with the keyboard focus when a nonsystem key is pressed.
-			/// A nonsystem key is a key that is pressed when the ALT key is not pressed.
-			/// </summary>
+			/// <summary>Posted to the window with the keyboard focus when a non system key is pressed.</summary>
+			/// <remarks>A no system key is a key that is pressed when the ALT key is not pressed.</remarks>
 			KEYDOWN = 0x0100,
-			/// <summary>
-			/// Posted to the window with the keyboard focus when a nonsystem key is released.
-			/// A nonsystem key is a key that is pressed when the ALT key is not pressed, or a keyboard key that is pressed when a window has the keyboard focus.
-			/// </summary>
+			/// <summary>Posted to the window with the keyboard focus when a non system key is released.</summary>
+			/// <remarks>A non system key is a key that is pressed when the ALT key is not pressed, or a keyboard key that is pressed when a window has the keyboard focus.</remarks>
 			KEYUP = 0x0101,
 			/// <summary>
-			/// Posted when the user presses the left mouse button while the cursor is in the client area of a window.
+			/// Posted to the window with the keyboard focus when the user presses the F10 key (which activates the menu bar) or holds down the ALT key and then presses another key.
+			/// </summary>
+			/// <remarks>
+			/// It also occurs when no window currently has the keyboard focus; in this case, the WM_SYSKEYDOWN message is sent to the active window.
+			/// The window that receives the message can distinguish between these two contexts by checking the context code in the lParam parameter.
+			/// </remarks>
+			SYSKEYDOWN = 0x0104,
+			/// <summary>Posted to the window with the keyboard focus when the user releases a key that was pressed while the ALT key was held down.</summary>
+			/// <remarks>
+			/// It also occurs when no window currently has the keyboard focus; in this case, the WM_SYSKEYUP message is sent to the active window.
+			/// The window that receives the message can distinguish between these two contexts by checking the context code in the lParam parameter.
+			/// </remarks>
+			SYSKEYUP = 0x0105,
+			/// <summary>Posted when the user presses the left mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
 			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
 			/// Otherwise, the message is posted to the window that has captured the mouse.
-			/// </summary>
+			/// </remarks>
 			LBUTTONDOWN = 0x0201,
-			/// <summary>
-			/// Posted when the user releases the left mouse button while the cursor is in the client area of a window.
+			/// <summary>Posted when the user releases the left mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
 			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
 			/// Otherwise, the message is posted to the window that has captured the mouse.
-			/// </summary>
+			/// </remarks>
 			LBUTTONUP = 0x0202,
-			/// <summary>
-			/// Posted when the user presses the right mouse button while the cursor is in the client area of a window.
+			/// <summary>Posted when the user presses the right mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
 			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
 			/// Otherwise, the message is posted to the window that has captured the mouse.
-			/// </summary>
+			/// </remarks>
 			RBUTTONDOWN = 0x0204,
-			/// <summary>
-			/// Posted when the user releases the right mouse button while the cursor is in the client area of a window.
+			/// <summary>Posted when the user releases the right mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
 			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
 			/// Otherwise, the message is posted to the window that has captured the mouse.
-			/// </summary>
+			/// </remarks>
 			RBUTTONUP = 0x0205,
+			/// <summary>Posted when the user presses the middle mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
+			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
+			/// Otherwise, the message is posted to the window that has captured the mouse.
+			/// </remarks>
+			MBUTTONDOWN = 0x0206,
+			/// <summary>Posted when the user releases the middle mouse button while the cursor is in the client area of a window.</summary>
+			/// <remarks>
+			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
+			/// Otherwise, the message is posted to the window that has captured the mouse.
+			/// </remarks>
+			MBUTTONUP = 0x0207,
+			/// <summary>Sent to the focus window when the mouse wheel is rotated.</summary>
+			/// <remarks>
+			/// The DefWindowProc function propagates the message to the window's parent.
+			/// There should be no internal forwarding of the message, since DefWindowProc propagates it up the parent chain until it finds a window that processes it.
+			/// </remarks>
+			MOUSEWHEEL = 0x020A,
+			/// <summary>Posted when the user presses either XBUTTON1 or XBUTTON2 while the cursor is in the client area of a window.</summary>
+			/// <remarks>
+			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
+			/// Otherwise, the message is posted to the window that has captured the mouse.
+			/// </remarks>
+			XBUTTONDOWN = 0x020B,
+			/// <summary>Posted when the user releases either XBUTTON1 or XBUTTON2 while the cursor is in the client area of a window.</summary>
+			/// <remarks>
+			/// If the mouse is not captured, the message is posted to the window beneath the cursor.
+			/// Otherwise, the message is posted to the window that has captured the mouse.
+			/// </remarks>
+			XBUTTONUP = 0x020C,
 			/// <summary>
 			/// Sets or removes the read-only style (ES_READONLY) of an edit control.
 			/// You can send this message to either an edit control or a rich edit control.
@@ -79,7 +119,7 @@ namespace Plugin.WindowAutomation.Native
 				=> new Rectangle(Left, Top, Right - Left, Bottom - Top);
 		}
 
-		public enum SM : Int32
+		public enum SM
 		{
 			/// <summary>The width of a window border, in pixels. This is equivalent to the SM_CXEDGE value for windows with the 3-D look.</summary>
 			CXBORDER = 5,
@@ -122,7 +162,7 @@ namespace Plugin.WindowAutomation.Native
 		public static extern Boolean IsWindowVisible(IntPtr hWnd);
 
 		/// <summary>Specified window's show state</summary>
-		public enum SW : Int32
+		public enum SW
 		{
 			/// <summary>Hides the window and activates another window.</summary>
 			HIDE = 0,
@@ -131,7 +171,7 @@ namespace Plugin.WindowAutomation.Native
 			/// If the window is minimized or maximized, the system restores it to its original size and position.
 			/// An application should specify this flag when displaying the window for the first time.
 			/// </summary>
-			SHOWNORMAL = 1,
+			SHOWNORMAL = NORMAL,
 			/// <summary>
 			/// Activates and displays a window.
 			/// If the window is minimized or maximized, the system restores it to its original size and position.
@@ -141,7 +181,7 @@ namespace Plugin.WindowAutomation.Native
 			/// <summary>Activates the window and displays it as a minimized window</summary>
 			SHOWMINIMIZED = 2,
 			/// <summary>Activates the window and displays it as a maximized window</summary>
-			SHOWMAXIMIZED = 3,
+			SHOWMAXIMIZED = MAXIMIZE,
 			/// <summary>Activates the window and displays it as a maximized window</summary>
 			MAXIMIZE = 3,
 			/// <summary>Displays a window in its most recent size and position</summary>
@@ -274,7 +314,7 @@ namespace Plugin.WindowAutomation.Native
 		public static extern IntPtr WindowFromPoint(Point point);
 
 		/// <summary>To retrieve a value from the extra class memory</summary>
-		public enum GCL : Int32
+		public enum GCL
 		{
 			/// <summary>
 			/// Retrieves an ATOM value that uniquely identifies the window class.
@@ -413,7 +453,7 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll",SetLastError = true)]
 		public static extern IntPtr GetWindow(IntPtr hWnd, GW uCmd);
 
-		public enum WindowLongFlags : Int32
+		public enum WindowLongFlags
 		{
 			/// <summary>Sets a new extended window style.</summary>
 			GWL_EXSTYLE = -20,
@@ -573,7 +613,7 @@ namespace Plugin.WindowAutomation.Native
 			/// Bottom-to-top painting order allows a descendent window to have translucency (alpha) and transparency (color-key) effects, but only if the descendent window also has the <see cref="WS_EX.TRANSPARENT"/> bit set.
 			/// </summary>
 			/// <remarks>
-			/// Double-buffering allows the window and its descendents to be painted without flicker.
+			/// Double-buffering allows the window and its descendants to be painted without flicker.
 			/// This cannot be used if the window has a class style of either CS_OWNDC or CS_CLASSDC.
 			/// </remarks>
 			COMPOSITED = 0x02000000L,
@@ -767,7 +807,7 @@ namespace Plugin.WindowAutomation.Native
 			SHOWWINDOW = 0x0040,
 		}
 
-		public enum InsertAfter : Int32
+		public enum InsertAfter
 		{
 			TOPMOST = -1,
 			NOTOPMOST = -2,
@@ -792,9 +832,6 @@ namespace Plugin.WindowAutomation.Native
 
 		[DllImport("user32.dll")]
 		private static extern Int32 GetWindowTextLength(IntPtr hWnd);
-
-		[DllImport("user32.dll")]
-		public static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
 
 		[DllImport("user32.dll")]
 		private static extern Int32 GetClassName(IntPtr hWnd, StringBuilder lpClassName, Int32 nMaxCount);
@@ -853,5 +890,8 @@ namespace Plugin.WindowAutomation.Native
 			Window.GetWindowText(hWnd, result, result.Capacity);
 			return result.ToString();
 		}
+
+		[DllImport("user32.dll")]
+		public static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
 	}
 }

@@ -6,7 +6,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB15D54B-C3B1-4D63-BD2D-2ABBC79156C1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		Plugin.WindowAutomation.dll.nuspec = Plugin.WindowAutomation.dll.nuspec
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+		NuGet.config = NuGet.config
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -19,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{F0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.WindowAutomation35", "Plugin.WindowAutomation\Plugin.WindowAutomation35.csproj", "{E8D66370-032D-453A-8BBD-7DBEA49FEB54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.WindowAutomation", "Plugin.WindowAutomation\Plugin.WindowAutomation.csproj", "{96802AF7-2147-9A14-1A50-B209A5A40777}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +34,10 @@ Global
 		{E8D66370-032D-453A-8BBD-7DBEA49FEB54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8D66370-032D-453A-8BBD-7DBEA49FEB54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8D66370-032D-453A-8BBD-7DBEA49FEB54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96802AF7-2147-9A14-1A50-B209A5A40777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96802AF7-2147-9A14-1A50-B209A5A40777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96802AF7-2147-9A14-1A50-B209A5A40777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96802AF7-2147-9A14-1A50-B209A5A40777}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

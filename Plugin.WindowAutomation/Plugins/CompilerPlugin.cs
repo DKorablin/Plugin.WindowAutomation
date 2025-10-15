@@ -4,47 +4,47 @@ using SAL.Windows;
 
 namespace Plugin.WindowAutomation.Plugins
 {
-	/// <summary>Обёртка над плагином компилятором</summary>
+	/// <summary>Wrapper around the runtime compiler plugin.</summary>
 	internal class CompilerPlugin
 	{
-		/// <summary>Ссылка на текущий плагин</summary>
-		private readonly PluginWindows _plugin;
+		/// <summary>Reference to current plugin instance.</summary>
+		private readonly Plugin _plugin;
 		private IPluginDescription _pluginCompiler;
 
-		/// <summary>Плагин компиляции</summary>
+		/// <summary>Compilation plugin constants.</summary>
 		private static class PluginConstants
 		{
-			/// <summary>ID плагина с рантайм компиляцией</summary>
+			/// <summary>Runtime compiler plugin ID.</summary>
 			public const String Name = "425f8b0c-f049-44ee-8375-4cc874d6bf94";
 
-			/// <summary>Публичные методы плагина</summary>
+			/// <summary>Public plugin method names.</summary>
 			public static class Methods
 			{
-				/// <summary>Проверка на существование кода</summary>
+				/// <summary>Check whether a method exists.</summary>
 				public const String IsMethodExists = "IsMethodExists";
 
-				/// <summary>Получить список всех методов, которые созданы для этого плагина</summary>
+				/// <summary>Get list of all methods created for this plugin.</summary>
 				public const String GetMethods = "GetMethods";
 
-				/// <summary>Удалить код</summary>
+				/// <summary>Delete a method.</summary>
 				public const String DeleteMethod = "DeleteMethod";
 
-				/// <summary>Выполнить динамический код</summary>
+				/// <summary>Invoke dynamic code.</summary>
 				public const String InvokeDynamicMethod = "InvokeDynamicMethod";
 			}
 
-			/// <summary>Окна плагина</summary>
+			/// <summary>Plugin window identifiers.</summary>
 			public static class Windows
 			{
-				/// <summary>Окно редактирования исходного кода на .NET</summary>
+				/// <summary>.NET source code editor window.</summary>
 				public const String DocumentCompiler = "Plugin.Compiler.DocumentCompiler";
 
-				/// <summary>Событие сохранения данных в окне <c>DocumentCompiler</c></summary>
+				/// <summary>Save event name for the <c>DocumentCompiler</c> window.</summary>
 				public const String SaveEventName = "SaveEvent";
 			}
 		}
 
-		/// <summary>Ссылка на описание собственного плагина</summary>
+		/// <summary>Gets IPluginDescription for this plugin instance.</summary>
 		private IPluginDescription PluginSelf
 		{
 			get
@@ -56,26 +56,25 @@ namespace Plugin.WindowAutomation.Plugins
 			}
 		}
 
-		/// <summary>Ссылка на описание плагина компиляции</summary>
+		/// <summary>Gets IPluginDescription for the compiler plugin.</summary>
 		public IPluginDescription PluginInstance
-			=> this._pluginCompiler ?? (this._pluginCompiler = this._plugin.HostWindows.Plugins[this.Name]);
+			=> this._pluginCompiler ?? (this._pluginCompiler = this._plugin.HostWindows.Plugins[PluginConstants.Name]);
 
-		/// <summary>Наименование плагина с компиляцией</summary>
-		public String Name => PluginConstants.Name;
+		public static String Name => PluginConstants.Name;
 
-		/// <summary>Создание инстанса обёртки плагина компилятора</summary>
-		/// <param name="plugin">Текущий плагин</param>
-		public CompilerPlugin(PluginWindows plugin)
+		/// <summary>Create wrapper instance.</summary>
+		/// <param name="plugin">Current plugin.</param>
+		public CompilerPlugin(Plugin plugin)
 			=> this._plugin = plugin;
 
-		/// <summary>Создать окно с редактированием кода компиляции</summary>
-		/// <param name="methodName">Наименование класса, используемом в коде компиляции</param>
-		/// <param name="onSave">Событие, вызываемое при сохранении кода в окне</param>
+		/// <summary>Create a code editor window for compiling dynamic method.</summary>
+		/// <param name="methodName">Class name used in dynamic code.</param>
+		/// <param name="onSave">Callback invoked when code is saved.</param>
 		public void CreateCompilerWindow(String methodName, EventHandler<DataEventArgs> onSave)
 		{
 			IPluginDescription self = this.PluginSelf;
-			IPluginDescription pluginCompiler = this.PluginInstance
-				?? throw new ArgumentNullException($"Plugin ID={PluginConstants.Name} not installed");
+			_ = this.PluginInstance
+				?? throw new InvalidOperationException($"Plugin ID={PluginConstants.Name} not installed");
 
 			IWindow wnd = this._plugin.HostWindows.Windows.CreateWindow(PluginConstants.Name,
 				PluginConstants.Windows.DocumentCompiler,
@@ -92,9 +91,9 @@ namespace Plugin.WindowAutomation.Plugins
 				wnd.AddEventHandler(PluginConstants.Windows.SaveEventName, onSave);
 		}
 
-		/// <summary>Удалить метод</summary>
-		/// <param name="methodName">Наименование метода для удаления</param>
-		/// <returns>Результат удаления метода</returns>
+		/// <summary>Delete a dynamic method.</summary>
+		/// <param name="methodName">Method name.</param>
+		/// <returns>True if deleted.</returns>
 		public Boolean DeleteMethod(String methodName)
 		{
 			IPluginDescription self = this.PluginSelf;
@@ -106,9 +105,9 @@ namespace Plugin.WindowAutomation.Plugins
 					.Invoke(self, methodName);
 		}
 
-		/// <summary>Проверка на существование динамического метода в плагине компиляции</summary>
-		/// <param name="methodName">Наименование метода в плагине компиляции</param>
-		/// <returns>Данный метод существует в плагине компиляции для такого плагина</returns>
+		/// <summary>Check if a dynamic method exists for this plugin.</summary>
+		/// <param name="methodName">Method name.</param>
+		/// <returns>True if method exists.</returns>
 		public Boolean IsMethodExists(String methodName)
 		{
 			IPluginDescription self = this.PluginSelf;
@@ -120,29 +119,29 @@ namespace Plugin.WindowAutomation.Plugins
 					.Invoke(self, methodName);
 		}
 
-		/// <summary>Получить список всех методов</summary>
-		/// <returns>Список всех методов, созданных для конкретного плагина</returns>
+		/// <summary>Get all dynamic methods created for this plugin.</summary>
+		/// <returns>List of method names or null if not available.</returns>
 		public String[] GetMethods()
 		{
 			IPluginDescription self = this.PluginSelf;
 			IPluginDescription pluginCompiler = this.PluginInstance;
 
 			return pluginCompiler == null
-				? null
+				? new String[] { }
 				: (String[])pluginCompiler.Type
 					.GetMember<IPluginMethodInfo>(PluginConstants.Methods.GetMethods)
 					.Invoke(self);
 		}
 
-		/// <summary>Вызвать динамический код, написанный заранее через плагин</summary>
-		/// <param name="methodName">Наименование класса, испольуемом в коде компиляции</param>
-		/// <param name="compilerArgs">Аргументы, передаваемые в скомпилированный класс</param>
-		/// <returns>Результат выполнения метода</returns>
+		/// <summary>Invoke pre-compiled dynamic code.</summary>
+		/// <param name="methodName">Class name used in dynamic code.</param>
+		/// <param name="compilerArgs">Arguments passed to the compiled class.</param>
+		/// <returns>Method result.</returns>
 		public Object InvokeDynamicMethod(String methodName, params Object[] compilerArgs)
 		{
 			IPluginDescription self = this.PluginSelf;
 			IPluginDescription pluginCompiler = this.PluginInstance
-				?? throw new ArgumentNullException($"Plugin ID={PluginConstants.Name} not installed");
+				?? throw new InvalidOperationException($"Plugin ID={PluginConstants.Name} not installed");
 
 			return pluginCompiler.Type
 				.GetMember<IPluginMethodInfo>(PluginConstants.Methods.InvokeDynamicMethod)

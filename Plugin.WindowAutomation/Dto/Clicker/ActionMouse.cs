@@ -14,18 +14,18 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 		private Point _location;
 		private UInt32 _repeat = 1;
 
-		/// <summary>Какую кнопку нажимать</summary>
+		/// <summary>Which button should I press?</summary>
 		[DefaultValue(MouseButtons.Left)]
-		[Description("What button to click")]
+		[Description("Which button to click")]
 		public MouseButtons Button { get; set; }
 
 		[Editor(typeof(ColumnEditor<Input.ClickFlags>), typeof(UITypeEditor))]
 		[Description("How to perform click")]
 		public Input.ClickFlags Click { get; set; } = Input.ClickFlags.Down | Input.ClickFlags.Up;
 
-		/// <summary>Где конпку нажимать</summary>
+		/// <summary>Where to press the button</summary>
 		[Editor(typeof(PointSelectorEditor), typeof(UITypeEditor))]
-		[Description("Specify mouse coordinates where mouse event will be invoked")]
+		[Description("Specify the mouse coordinates where the mouse event will be triggered.")]
 		public Point Location
 		{
 			get => this._location;
@@ -37,9 +37,9 @@ namespace Plugin.WindowAutomation.Dto.Clicker
 			}
 		}
 
-		/// <summary>Сколько раз кнопку нажимать</summary>
+		/// <summary>How many times should I press the button?</summary>
 		[DefaultValue(1)]
-		[Description("How many times to press the mouse buttons")]
+		[Description("How many times to click the mouse buttons")]
 		public UInt32 Repeat
 		{
 			get => this._repeat;

@@ -1,0 +1,83 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net35;net8.0-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Plugin.WindowAutomation</RootNamespace>
+		<Configuration>Debug</Configuration>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<NoWarn>$(NoWarn);CA1416</NoWarn>
+		<DefineConstants>$(DefineConstants)</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<PublishSingleFile>true</PublishSingleFile>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	</PropertyGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+		<Reference Include="UIAutomationClient" />
+		<Reference Include="UIAutomationTypes" />
+		<Reference Include="System.Design" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WPF"/>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="SAL.Windows">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json"/>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' != 'net35'">
+		<AssemblyAttributes Include="AssemblyMetadata">
+			<_Parameter1>ProjectUrl</_Parameter1>
+			<_Parameter2>https://github.com/DKorablin/Plugin.WindowAutomation</_Parameter2>
+		</AssemblyAttributes>
+		<AssemblyAttributes Include="System.Runtime.Versioning.SupportedOSPlatform">
+			<_Parameter1>Windows</_Parameter1>
+		</AssemblyAttributes>
+	</ItemGroup>
+
+	<!--nuspec-->
+	<PropertyGroup>
+		<PackageId>AlphaOmega.SAL.Plugin.WindowAutomation</PackageId>
+		<Version>$(Version)</Version>
+		<Title>Window automation plugin with UI</Title>
+		<Description>Automation plugin for various Windows tasks</Description>
+		<Authors>Danila Korablin</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+		<icon>docs\SAL.100.png</icon>
+		<RepositoryUrl>https://github.com/DKorablin/Plugin.WindowAutomation</RepositoryUrl>
+		<PackageTags>SAL plugin windows automation WinAPI</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+		<None Include="..\Images.Shared\SAL.100.png" Pack="true" PackagePath="\docs"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\WinForms.Shared\DbListView.cs">
+			<Link>UI\DbListView.cs</Link>
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.cs">
+			<Link>UI\SearchGrid.cs</Link>
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="..\WinForms.Shared\SearchGrid\SearchGrid.designer.cs">
+			<Link>UI\SearchGrid.designer.cs</Link>
+			<DependentUpon>SearchGrid.cs</DependentUpon>
+		</Compile>
+	</ItemGroup>
+</Project>
