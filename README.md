@@ -1,4 +1,5 @@
 # Window Automation Plugin
+[![Auto build](https://github.com/DKorablin/Plugin.WindowAutomation/actions/workflows/release.yml/badge.svg)](https://github.com/DKorablin/Plugin.WindowAutomation/releases/latest)
 
 Automation plugin for SAL Windows host providing keyboard / mouse macro recording, playback and window inspection utilities for classic Win32 / WinForms desktop environments.
 
@@ -28,6 +29,7 @@ Property | Description
 Start | Shortcut to start / stop action playback.
 Record | Shortcut to start / stop recording.
 AntiDebounceHookType | Flags (None / Keyboard / Mouse) selecting which global anti‑debounce hooks to enable.
+AntiDebounceThresholdMs | Debounce threshold in milliseconds (default 50 ms).
 
 Projects are persisted under an internal blob key (`ClickerJson`) and can also be exported/imported as `.clc` JSON files through the UI.
 
@@ -41,7 +43,7 @@ ActionMethod | Dynamically compiled method (optional runtime compiler plugin req
 
 ## Debounce Logic
 * Constant time O(1) arrays store last accepted timestamp per VK or mouse button.
-* Suppress if new event occurs within 50 ms (customizable via code constant `_thresholdMs`).
+* Suppress if new event occurs within 50 ms.
 * Tracing subclass batches suppression statistics once per second to minimize hook overhead.
 
 ## Building
