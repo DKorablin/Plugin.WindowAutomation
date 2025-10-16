@@ -117,6 +117,7 @@ namespace Plugin.WindowAutomation
 			switch(e.PropertyName)
 			{
 			case nameof(WindowAutomation.Settings.AntiDebounceHookType):
+			case nameof(WindowAutomation.Settings.AntiDebounceThresholdMs):
 				this._antiDebounceHook?.Dispose();
 				this._antiDebounceHook = null;
 

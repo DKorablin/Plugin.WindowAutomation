@@ -14,7 +14,7 @@ namespace Plugin.WindowAutomation.Native
 
 		public GlobalWindowsHookAntiDebounceWithTrace(HookType hookType, UInt32 thresholdMs = 50)
 			: base(hookType, thresholdMs: thresholdMs)
-			=> Plugin.Trace.TraceInformation("Debounce started: HookType={0}, ThresholdMs={1}", hookType, thresholdMs);
+			=> Plugin.Trace.TraceInformation("Debounce started: HookType={0}, ThresholdMs={1:N0}", hookType, thresholdMs);
 
 		protected override void OnSuppressedKey(Int32 virtualKey, Int32 nowTick)
 		{
