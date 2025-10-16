@@ -51,9 +51,9 @@ namespace Plugin.WindowAutomation.Native
 
 					this._suppressedKeyCounts[i] = 0;
 					if(sb == null)
-						sb = new System.Text.StringBuilder(256).AppendLine("Debounce suppressed: ");
+						sb = new System.Text.StringBuilder(256).Append("Debounce suppressed:");
 
-					sb.AppendLine($"\tKey {(System.Windows.Forms.Keys)i} ({c:N0});");
+					sb.Append($" Key {(System.Windows.Forms.Keys)i} ({c:N0});");
 				}
 				for(Int32 i = 0; i < this._suppressedMouseCounts.Length; i++)
 				{
@@ -62,10 +62,11 @@ namespace Plugin.WindowAutomation.Native
 
 					this._suppressedMouseCounts[i] = 0;
 					if(sb == null)
-						sb = new System.Text.StringBuilder(256).AppendLine("Debounce suppressed: ");
+						sb = new System.Text.StringBuilder(256).Append("Debounce suppressed:");
 
-					sb.AppendLine($"\tMouse {GetMouseButtonName(i)} '({c:N0})';");
+					sb.Append($" Mouse {GetMouseButtonName(i)} '({c:N0})';");
 				}
+
 				if(sb != null)
 					Plugin.Trace.TraceInformation(sb.ToString());
 			} finally

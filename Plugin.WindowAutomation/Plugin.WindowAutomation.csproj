@@ -56,7 +56,7 @@
 		<Authors>Danila Korablin</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
-		<icon>docs\SAL.100.png</icon>
+		<PackageIcon>docs\SAL.100.png</PackageIcon>
 		<RepositoryUrl>https://github.com/DKorablin/Plugin.WindowAutomation</RepositoryUrl>
 		<PackageTags>SAL plugin windows automation WinAPI</PackageTags>
 	</PropertyGroup>
