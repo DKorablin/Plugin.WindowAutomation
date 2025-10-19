@@ -27,14 +27,14 @@
 	</ItemGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
-		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WPF"/>
+		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WPF" />
 	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="SAL.Windows">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json"/>
+		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' != 'net35'">
@@ -63,7 +63,7 @@
 
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
-		<None Include="..\Images.Shared\SAL.100.png" Pack="true" PackagePath="\docs"/>
+		<None Include="..\Images.Shared\SAL.100.png" Pack="true" PackagePath="\docs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -79,5 +79,9 @@
 			<Link>UI\SearchGrid.designer.cs</Link>
 			<DependentUpon>SearchGrid.cs</DependentUpon>
 		</Compile>
+		<EmbeddedResource Include="..\WinForms.Shared\SearchGrid\SearchGrid.resx">
+			<Link>UI\SearchGrid.resx</Link>
+			<DependentUpon>SearchGrid.cs</DependentUpon>
+		</EmbeddedResource>
 	</ItemGroup>
 </Project>

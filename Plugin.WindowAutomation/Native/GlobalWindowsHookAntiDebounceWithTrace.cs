@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Plugin.WindowAutomation.Dto;
 
 namespace Plugin.WindowAutomation.Native
@@ -32,8 +33,8 @@ namespace Plugin.WindowAutomation.Native
 		{
 			if(unchecked(nowTick - this._lastFlushTick) < FlushIntervalMs)
 				return;
-			if(System.Threading.Interlocked.CompareExchange(ref _flushScheduled, 1, 0) == 0)
-				System.Threading.ThreadPool.UnsafeQueueUserWorkItem(_ => this.FlushSuppressedCounts(), null);
+			if(Interlocked.CompareExchange(ref _flushScheduled, 1, 0) == 0)
+				ThreadPool.UnsafeQueueUserWorkItem(_ => this.FlushSuppressedCounts(), null);
 		}
 
 		private void FlushSuppressedCounts()
@@ -71,7 +72,7 @@ namespace Plugin.WindowAutomation.Native
 					Plugin.Trace.TraceInformation(sb.ToString());
 			} finally
 			{
-				System.Threading.Interlocked.Exchange(ref _flushScheduled, 0);
+				Interlocked.Exchange(ref _flushScheduled, 0);
 			}
 
 			String GetMouseButtonName(Int32 index)
