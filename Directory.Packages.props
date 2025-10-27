@@ -3,7 +3,7 @@
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="SAL.Windows" Version="1.2.10">
+		<PackageVersion Include="SAL.Windows" Version="1.2.11">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageVersion>
 		<PackageVersion Include="Newtonsoft.Json" Version="13.0.4"/>
