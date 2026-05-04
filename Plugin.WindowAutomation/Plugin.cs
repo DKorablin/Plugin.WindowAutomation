@@ -10,8 +10,6 @@ namespace Plugin.WindowAutomation
 {
 	public class Plugin : IPlugin, IPluginSettings<Settings>
 	{
-		internal static Plugin Instance;//HACK
-		private static TraceSource _trace;
 		private Settings _settings;
 		private IMenuItem _menuWinApi;
 		private IMenuItem _menuWindowFinder;
@@ -42,7 +40,9 @@ namespace Plugin.WindowAutomation
 			}
 		}
 
-		internal static TraceSource Trace => _trace ?? (_trace = Plugin.CreateTraceSource<Plugin>());
+		internal static Plugin Instance { get; private set; }
+
+		internal static ITraceSource Trace { get; private set; }
 
 		private Dictionary<String, DockState> DocumentTypes
 		{
@@ -58,10 +58,11 @@ namespace Plugin.WindowAutomation
 			}
 		}
 
-		public Plugin(IHostWindows hostWindows)
+		public Plugin(IHostWindows hostWindows, ITraceSource trace)
 		{
 			this.HostWindows = hostWindows ?? throw new ArgumentNullException(nameof(hostWindows));
 			Plugin.Instance = this;
+			Plugin.Trace = trace ?? throw new ArgumentNullException(nameof(trace));
 		}
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
@@ -131,15 +132,6 @@ namespace Plugin.WindowAutomation
 			=> this.DocumentTypes.TryGetValue(typeName, out DockState state)
 				? this.HostWindows.Windows.CreateWindow(this, typeName, searchForOpened, state, args)
 				: null;
-
-		private static TraceSource CreateTraceSource<T>(String name = null) where T : IPlugin
-		{
-			TraceSource result = new TraceSource(typeof(T).Assembly.GetName().Name + name);
-			result.Switch.Level = SourceLevels.All;
-			result.Listeners.Remove("Default");
-			result.Listeners.AddRange(System.Diagnostics.Trace.Listeners);
-			return result;
-		}
 
 		/// <summary>Get a unique method name for the new timer</summary>
 		/// <returns>Unique method name</returns>

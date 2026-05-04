@@ -168,7 +168,7 @@ namespace Plugin.WindowAutomation
 				bnActionsRecord.Checked = recordState;
 				this.bnActionsRecord_Click(sender, e);
 
-				Plugin.Trace.TraceInformation("{0} recording", recordState ? "Start" : "Stop");
+				Plugin.Trace.TraceEvent(System.Diagnostics.TraceEventType.Information, 0, "{0} recording", recordState ? "Start" : "Stop");
 			} else if(bnActionsRecord.Checked)//Priority recording
 			{
 				if(!Input.IsExtendedKey(e.KeyCode))
@@ -202,7 +202,7 @@ namespace Plugin.WindowAutomation
 				Boolean runState = !bnActionsStart.Checked;
 				bnActionsStart.Checked = runState;
 				this.bnActionsRun_CheckedChanged(sender, e);
-				Plugin.Trace.TraceInformation("{0} clicker", runState ? "Starting" : "Stopping");
+				Plugin.Trace.TraceEvent(System.Diagnostics.TraceEventType.Information, 0, "{0} clicker", runState ? "Starting" : "Stopping");
 			}
 		}
 
@@ -292,7 +292,7 @@ namespace Plugin.WindowAutomation
 				if(bwClicker.IsBusy)
 				{
 					bnActionsStart.Checked = false;
-					Plugin.Trace.TraceInformation("Clicker is busy");
+					Plugin.Trace.TraceEvent(System.Diagnostics.TraceEventType.Information, 0, "Clicker is busy");
 					return;
 				}
 

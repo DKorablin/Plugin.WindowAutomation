@@ -5,4 +5,3 @@ using System.Runtime.InteropServices;
 [assembly: System.CLSCompliant(false)]
 
 [assembly: AssemblyDescription("Browse and automate user events")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2021-2025")]

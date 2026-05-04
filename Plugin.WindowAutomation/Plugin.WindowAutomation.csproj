@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35;net8.0-windows</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.WindowAutomation</RootNamespace>
@@ -20,7 +20,7 @@
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
 	
-	<ItemGroup Condition="'$(TargetFramework)' == 'net35'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="UIAutomationClient" />
 		<Reference Include="UIAutomationTypes" />
 		<Reference Include="System.Design" />
@@ -37,13 +37,10 @@
 		<PackageReference Include="Newtonsoft.Json" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' != 'net35'">
+	<ItemGroup>
 		<AssemblyAttributes Include="AssemblyMetadata">
 			<_Parameter1>ProjectUrl</_Parameter1>
 			<_Parameter2>https://github.com/DKorablin/Plugin.WindowAutomation</_Parameter2>
-		</AssemblyAttributes>
-		<AssemblyAttributes Include="System.Runtime.Versioning.SupportedOSPlatform">
-			<_Parameter1>Windows</_Parameter1>
 		</AssemblyAttributes>
 	</ItemGroup>
 
@@ -83,5 +80,20 @@
 			<Link>UI\SearchGrid.resx</Link>
 			<DependentUpon>SearchGrid.cs</DependentUpon>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>

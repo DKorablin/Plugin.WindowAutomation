@@ -19,7 +19,7 @@ Automation plugin for SAL Windows host providing keyboard / mouse macro recordin
 * UI Components
   * WinForms based panel (`PanelWindowClicker`) with list management, property grid editing, inline shortcut configuration, recording / playback toolstrip controls and project file import/export.
 * Multi‑Targeting
-  * Builds for: `.NET Framework 3.5` (legacy environments) and `net8.0-windows` (modern). Conditional references ensure UIAutomation assemblies only load on net35; WPF desktop framework reference for net8 where required by host ecosystem.
+  * Builds for: `.NET Framework 4.8` (legacy environments) and `net8.0-windows` (modern). Conditional references ensure UIAutomation assemblies only load on net48; WPF desktop framework reference for net8 where required by host ecosystem.
 * Packaging / Output
   * Central `Directory.Build.props` routes build output into a shared artifacts directory with target framework appended. For `net8.0-windows` transitive dependencies are copied locally via `CopyLocalLockFileAssemblies=true`.
 
@@ -47,7 +47,7 @@ ActionMethod | Dynamically compiled method (optional runtime compiler plugin req
 * Tracing subclass batches suppression statistics once per second to minimize hook overhead.
 
 ## Building
-Prerequisites: .NET SDK 8.x (for net8 target) and classic developer pack for .NET Framework 3.5 if building legacy target.
+Prerequisites: .NET SDK 8.x (for net8 target) and classic developer pack for .NET Framework 4.8 if building legacy target.
 
 Standard build:
 ```
