@@ -13,12 +13,11 @@ namespace Plugin.WindowAutomation
 	{
 		private WindowInfo _lastWindow = new WindowInfo(IntPtr.Zero);
 
-		private Plugin Plugin { get => (Plugin)this.Window.Plugin; }
 		private IWindow Window { get => (IWindow)base.Parent; }
 
 		public PanelWindowFinder()
 		{
-			InitializeComponent();
+			this.InitializeComponent();
 			gridSearch.TreeView = tvWindows;
 		}
 

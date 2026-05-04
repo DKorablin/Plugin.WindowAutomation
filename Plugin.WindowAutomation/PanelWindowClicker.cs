@@ -21,7 +21,7 @@ namespace Plugin.WindowAutomation
 		private GlobalWindowsHookListener _keyboardHook = null;
 		private GlobalWindowsHookListener _mouseHook = null;
 
-		private Plugin Plugin => (Plugin)this.Window.Plugin;
+		private Plugin Plugin => (Plugin)this.Window.Plugin.Instance;
 
 		private IWindow Window => (IWindow)base.Parent;
 
