@@ -1,0 +1,16 @@
+{
+	"profiles": {
+		"Flatbed.MDI Net80": {
+			"commandName": "Executable",
+			"executablePath": "C:\\Visual Studio Projects\\C#\\SAL\\bin\\Flatbed.MDI\\net8.0-windows\\Flatbed.MDI.exe",
+			"commandLineArgs": "\"/SAL_Path:C:\\Visual Studio Projects\\C#\\SAL\\Plugins\\bin\"",
+			"workingDirectory": "C:\\Visual Studio Projects\\C#\\SAL\\bin\\Flatbed.MDI\\net8.0-windows\\"
+		},
+		"Flatbed.MDI Net48": {
+			"commandName": "Executable",
+			"executablePath": "C:\\Visual Studio Projects\\C#\\SAL\\bin\\Flatbed.MDI\\net48\\Flatbed.MDI.exe",
+			"commandLineArgs": "\"/SAL_Path:C:\\Visual Studio Projects\\C#\\SAL\\Plugins\\bin\"",
+			"workingDirectory": "C:\\Visual Studio Projects\\C#\\SAL\\bin\\Flatbed.MDI\\net48"
+		}
+	}
+}

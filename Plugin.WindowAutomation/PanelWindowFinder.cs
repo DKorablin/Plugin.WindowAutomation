@@ -126,7 +126,7 @@ namespace Plugin.WindowAutomation
 					// paint new window
 					this._lastWindow.ToggleBorder();
 				}
-				DisplayWindowInfo(this._lastWindow);
+				this.DisplayWindowInfo(this._lastWindow);
 			}
 			// show global mouse cursor
 			tsCursor.Text = "Cursor: " + Cursor.Position.ToString();
@@ -231,7 +231,11 @@ namespace Plugin.WindowAutomation
 		{
 			if(e.ClickedItem == cmsWindowsRefresh)
 				this.tsbnWindowsRefresh_Click(sender, e);
-			else if(e.ClickedItem == cmsWindowsPrintScreen)
+			else if(e.ClickedItem == cmsWindowsFocus)
+			{
+				WindowInfo window = (WindowInfo)tvWindows.SelectedNode.Tag;
+				window.Focus();
+			} else if(e.ClickedItem == cmsWindowsPrintScreen)
 			{
 				WindowInfo window = (WindowInfo)tvWindows.SelectedNode.Tag;
 				Bitmap bmp = window.GetWindowBitmap();

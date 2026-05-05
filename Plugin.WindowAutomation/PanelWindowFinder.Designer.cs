@@ -48,6 +48,7 @@
 			this.cmsWindows = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.cmsWindowsRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.cmsWindowsPrintScreen = new System.Windows.Forms.ToolStripMenuItem();
+			this.cmsWindowsFocus = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabAutomate = new System.Windows.Forms.TabPage();
 			this.pgAutomation = new System.Windows.Forms.PropertyGrid();
 			this.cbAutomationPattern = new System.Windows.Forms.ComboBox();
@@ -116,6 +117,7 @@
 			// 
 			this.ssMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsCursor});
+			this.ssMain.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.ssMain.Location = new System.Drawing.Point(0, 345);
 			this.ssMain.Name = "ssMain";
 			this.ssMain.Size = new System.Drawing.Size(330, 22);
@@ -178,11 +180,18 @@
 			// cmsWindows
 			// 
 			this.cmsWindows.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsWindowsFocus,
             this.cmsWindowsRefresh,
             this.cmsWindowsPrintScreen});
 			this.cmsWindows.Name = "cmsWindows";
 			this.cmsWindows.Size = new System.Drawing.Size(138, 48);
 			this.cmsWindows.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.cmsWindows_ItemClicked);
+			// 
+			// cmsWindowsFocus
+			// 
+			this.cmsWindowsFocus.Name = "cmsWindowsFocus";
+			this.cmsWindowsFocus.Size = new System.Drawing.Size(137, 22);
+			this.cmsWindowsFocus.Text = "&Focus";
 			// 
 			// cmsWindowsRefresh
 			// 
@@ -319,6 +328,7 @@
 		private System.Windows.Forms.ComboBox cbAutomationPattern;
 		private System.Windows.Forms.ToolStripMenuItem cmsWindowsRefresh;
 		private System.Windows.Forms.ToolStripMenuItem cmsWindowsPrintScreen;
+		private System.Windows.Forms.ToolStripMenuItem cmsWindowsFocus;
 		private AlphaOmega.Windows.Forms.SearchGrid gridSearch;
 		private System.Windows.Forms.TextBox txtModuleName;
 	}

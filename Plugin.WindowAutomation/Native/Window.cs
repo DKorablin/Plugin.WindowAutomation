@@ -232,6 +232,14 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll")]
 		public static extern Boolean ShowWindow(IntPtr hWnd, SW nCmdShow);
 
+		/// <summary>Brings the thread that created the specified window into the foreground and activates the window.</summary>
+		[DllImport("user32.dll")]
+		public static extern Boolean SetForegroundWindow(IntPtr hWnd);
+
+		/// <summary>Determines whether the specified window is minimized (iconic).</summary>
+		[DllImport("user32.dll")]
+		public static extern Boolean IsIconic(IntPtr hWnd);
+
 		/// <summary>The behavior of SendMessageTimeout function</summary>
 		[Flags]
 		public enum SMTO : UInt32
@@ -290,7 +298,7 @@ namespace Plugin.WindowAutomation.Native
 			UInt32 uTimeout,
 			out IntPtr lpdwResult);
 
-		[DllImport("user32.dll", EntryPoint = "SendMessageTimeout", SetLastError = true, CharSet = CharSet.Auto)]
+		[DllImport("user32.dll", EntryPoint = "SendMessageTimeout", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern UInt32 SendMessageTimeoutText(IntPtr hWnd,
 			WM Msg,
 			Int32 countOfChars,
@@ -690,6 +698,7 @@ namespace Plugin.WindowAutomation.Native
 			NOREDIRECTIONBITMAP = 0x00200000L,
 
 			/// <summary>The window is an overlapped window.</summary>
+			/// <remarks>Same as the WINDOWEDGE | CLIENTEDGE styles.</remarks>
 			OVERLAPPEDWINDOW = WINDOWEDGE | CLIENTEDGE,
 
 			/// <summary>The window is palette window, which is a modeless dialog box that presents an array of commands.</summary>
@@ -830,7 +839,7 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("gdi32.dll")]
 		public static extern IntPtr DeleteDC(IntPtr hdc);
 
-		[DllImport("user32.dll")]
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		private static extern Int32 GetWindowTextLength(IntPtr hWnd);
 
 		[DllImport("user32.dll")]
@@ -891,7 +900,7 @@ namespace Plugin.WindowAutomation.Native
 			return result.ToString();
 		}
 
-		[DllImport("user32.dll")]
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		public static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
 	}
 }

@@ -215,6 +215,18 @@ namespace Plugin.WindowAutomation.Dto
 				throw new Win32Exception();
 		}
 
+		/// <summary>Brings the window into the foreground and activates it.</summary>
+		public void Focus()
+		{
+			if(this.IsEmpty)
+				return;
+
+			if(Native.Window.IsIconic(this.Handle))
+				Native.Window.ShowWindow(this.Handle, Native.Window.SW.SHOWNORMAL);
+
+			Native.Window.SetForegroundWindow(this.Handle);
+		}
+
 		/// <summary>Toggles a temporary border highlight by drawing an XOR rectangle on the window DC.</summary>
 		public void ToggleBorder()
 		{
