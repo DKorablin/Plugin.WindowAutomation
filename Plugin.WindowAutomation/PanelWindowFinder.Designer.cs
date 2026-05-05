@@ -54,6 +54,8 @@
 			this.cbAutomationPattern = new System.Windows.Forms.ComboBox();
 			this.txtModuleName = new System.Windows.Forms.TextBox();
 			this.gridSearch = new AlphaOmega.Windows.Forms.SearchGrid();
+			this.splitWindows = new System.Windows.Forms.SplitContainer();
+			this.pbWindowPreview = new System.Windows.Forms.PictureBox();
 			this.ctlWindowFinder = new global::Plugin.WindowAutomation.UI.TargetWindowCtrl();
 			lblRect = new System.Windows.Forms.Label();
 			lblCaption = new System.Windows.Forms.Label();
@@ -64,6 +66,10 @@
 			this.tabFinder.SuspendLayout();
 			this.cmsWindows.SuspendLayout();
 			this.tabAutomate.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitWindows)).BeginInit();
+			this.splitWindows.Panel1.SuspendLayout();
+			this.splitWindows.Panel2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.ctlWindowFinder)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -145,7 +151,7 @@
 			this.tabFinder.Controls.Add(lblModuleName);
 			this.tabFinder.Controls.Add(this.txtModuleName);
 			this.tabFinder.Controls.Add(this.gridSearch);
-			this.tabFinder.Controls.Add(this.tvWindows);
+			this.tabFinder.Controls.Add(this.splitWindows);
 			this.tabFinder.Controls.Add(this.ctlWindowFinder);
 			this.tabFinder.Controls.Add(lblRect);
 			this.tabFinder.Controls.Add(this.txtCaption);
@@ -161,17 +167,37 @@
 			this.tabFinder.Text = "Finder";
 			this.tabFinder.UseVisualStyleBackColor = true;
 			// 
-			// tvWindows
+			// splitWindows
 			// 
-			this.tvWindows.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.splitWindows.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitWindows.Location = new System.Drawing.Point(3, 106);
+			this.splitWindows.Name = "splitWindows";
+			this.splitWindows.Size = new System.Drawing.Size(316, 210);
+			this.splitWindows.SplitterDistance = 200;
+			this.splitWindows.Panel2Collapsed = true;
+			this.splitWindows.TabIndex = 17;
+			this.splitWindows.Panel1.Controls.Add(this.tvWindows);
+			this.splitWindows.Panel2.Controls.Add(this.pbWindowPreview);
+			// 
+			// tvWindows
+			// 
 			this.tvWindows.ContextMenuStrip = this.cmsWindows;
+			this.tvWindows.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tvWindows.HideSelection = false;
-			this.tvWindows.Location = new System.Drawing.Point(3, 106);
+			this.tvWindows.Location = new System.Drawing.Point(0, 0);
 			this.tvWindows.Name = "tvWindows";
-			this.tvWindows.Size = new System.Drawing.Size(316, 210);
+			this.tvWindows.Size = new System.Drawing.Size(200, 210);
 			this.tvWindows.TabIndex = 17;
+			// 
+			// pbWindowPreview
+			// 
+			this.pbWindowPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pbWindowPreview.Name = "pbWindowPreview";
+			this.pbWindowPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.pbWindowPreview.TabIndex = 0;
+			this.pbWindowPreview.TabStop = false;
 			this.tvWindows.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvWindows_BeforeExpand);
 			this.tvWindows.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvWindows_AfterSelect);
 			this.tvWindows.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tvWindows_MouseClick);
@@ -307,6 +333,10 @@
 			this.tabFinder.PerformLayout();
 			this.cmsWindows.ResumeLayout(false);
 			this.tabAutomate.ResumeLayout(false);
+			this.splitWindows.Panel1.ResumeLayout(false);
+			this.splitWindows.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitWindows)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.ctlWindowFinder)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -331,5 +361,7 @@
 		private System.Windows.Forms.ToolStripMenuItem cmsWindowsFocus;
 		private AlphaOmega.Windows.Forms.SearchGrid gridSearch;
 		private System.Windows.Forms.TextBox txtModuleName;
+		private System.Windows.Forms.SplitContainer splitWindows;
+		private System.Windows.Forms.PictureBox pbWindowPreview;
 	}
 }

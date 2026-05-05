@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Plugin.WindowAutomation.Dto;
 using Plugin.WindowAutomation.Native;
 using Plugin.WindowAutomation.Plugins;
 using SAL.Flatbed;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -285,36 +285,29 @@ namespace Plugin.WindowAutomation.Dto
 			}
 		}
 
-		/// <summary>Captures a bitmap of this window's bounds using BitBlt; falls back to full desktop if empty.</summary>
+		/// <summary>Captures a bitmap of this window's bounds using PrintWindow; falls back to full desktop if empty.</summary>
 		public Bitmap GetWindowBitmap()
 		{
 			if(this.IsEmpty)
 				return GetDesktopBitmap();
 
-			IntPtr wndDc = Native.Window.GetWindowDC(this.Handle);
-			Debug.Assert(wndDc != IntPtr.Zero);
-
 			Rectangle rect = Native.Window.GetWindowRect(this.Handle);
-			Bitmap result = new Bitmap(rect.Width, rect.Height);
-			try
-			{
-				using(Graphics g = Graphics.FromImage(result))
-				{
-					IntPtr hDc = g.GetHdc();
-					try
-					{
-						if(!Native.Gdi.BitBlt(hDc, 0, 0, rect.Width, rect.Height, wndDc, 0, 0, Native.Gdi.RasterOperationCode.SRCCOPY))
-							throw new Win32Exception();
-					} finally
-					{
-						g.ReleaseHdc(hDc);
-					}
-				}
-			} finally
-			{
-				Native.Window.ReleaseDC(this.Handle, wndDc);
-			}
+			if(rect.Width == 0 || rect.Height == 0)
+				return null;
 
+			const UInt32 PW_RENDERFULLCONTENT = 0x00000002;
+			Bitmap result = new Bitmap(rect.Width, rect.Height);
+			using(Graphics g = Graphics.FromImage(result))
+			{
+				IntPtr hDc = g.GetHdc();
+				try
+				{
+					Native.Window.PrintWindow(this.Handle, hDc, PW_RENDERFULLCONTENT);
+				} finally
+				{
+					g.ReleaseHdc(hDc);
+				}
+			}
 			return result;
 		}
 

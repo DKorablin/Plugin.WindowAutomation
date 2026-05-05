@@ -833,6 +833,9 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll")]
 		public static extern Int32 ReleaseDC(IntPtr hWnd, IntPtr hdc);
 
+		[DllImport("user32.dll")]
+		public static extern Boolean PrintWindow(IntPtr hWnd, IntPtr hdcBlt, UInt32 nFlags);
+
 		[DllImport("gdi32.dll")]
 		public static extern IntPtr CreateDC(IntPtr lpszDriver, String lpszDevice, IntPtr lpszOutput, IntPtr lpInitData);
 

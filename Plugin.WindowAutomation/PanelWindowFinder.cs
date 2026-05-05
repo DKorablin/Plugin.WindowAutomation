@@ -137,6 +137,7 @@ namespace Plugin.WindowAutomation
 		{
 			WindowInfo window = (WindowInfo)e.Node.Tag;
 			this.DisplayWindowInfo(window);
+			this.UpdateWindowPreview(window);
 			AutomationElement element = AutomationElement.FromHandle(window.Handle);
 			if(element.GetSupportedPatterns().Length > 0)
 			{
@@ -144,6 +145,15 @@ namespace Plugin.WindowAutomation
 					tabMain.TabPages.Add(tabAutomate);
 			} else if(tabAutomate.Parent != null)
 				tabMain.TabPages.Remove(tabAutomate);
+		}
+
+		private void UpdateWindowPreview(WindowInfo window)
+		{
+			System.Drawing.Bitmap bmp = window.IsEmpty ? null : window.GetWindowBitmap();
+			System.Drawing.Image old = pbWindowPreview.Image;
+			pbWindowPreview.Image = bmp;
+			old?.Dispose();
+			splitWindows.Panel2Collapsed = bmp == null;
 		}
 
 		/// <summary>Show information about the given window</summary>
