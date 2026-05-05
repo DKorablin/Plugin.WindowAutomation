@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Automation;
 using System.Windows.Forms;
@@ -36,11 +37,76 @@ namespace Plugin.WindowAutomation
 
 		private void tsbnWindowsRefresh_Click(Object sender, EventArgs e)
 		{
-			tvWindows.Nodes.Clear();
-			WindowInfo desktop = new WindowInfo();
-			TreeNode node = new TreeNode(desktop.ToString()) { Tag = desktop };
-			node.Nodes.Add(new TreeNode());
-			tvWindows.Nodes.Add(node);
+			tvWindows.BeginUpdate();
+			try
+			{
+				if(tvWindows.Nodes.Count == 0)
+				{
+					WindowInfo desktop = new WindowInfo();
+					TreeNode node = new TreeNode(desktop.ToString()) { Tag = desktop };
+					node.Nodes.Add(new TreeNode());
+					tvWindows.Nodes.Add(node);
+				} else
+					foreach(TreeNode node in tvWindows.Nodes)
+						this.RefreshTreeNode(node);
+			} finally
+			{
+				tvWindows.EndUpdate();
+			}
+		}
+
+		private void RefreshTreeNode(TreeNode node)
+		{
+			WindowInfo wnd = (WindowInfo)node.Tag;
+			String newText = wnd.ToString();
+			if(node.Text != newText)
+				node.Text = newText;
+
+			Boolean isLoaded = !(node.Nodes.Count == 1 && node.Nodes[0].Tag == null);
+			if(!isLoaded)
+				return;
+
+			List<WindowInfo> currentChildren = new List<WindowInfo>(wnd.GetChildWindows());
+
+			for(Int32 i = node.Nodes.Count - 1; i >= 0; i--)
+			{
+				IntPtr childHandle = ((WindowInfo)node.Nodes[i].Tag).Handle;
+				Boolean stillExists = false;
+				foreach(WindowInfo c in currentChildren)
+					if(c.Handle == childHandle) { stillExists = true; break; }
+				if(!stillExists)
+					node.Nodes.RemoveAt(i);
+			}
+
+			Int32 insertIndex = 0;
+			foreach(WindowInfo child in currentChildren)
+			{
+				TreeNode existing = null;
+				for(Int32 i = insertIndex; i < node.Nodes.Count; i++)
+					if(((WindowInfo)node.Nodes[i].Tag).Handle == child.Handle)
+					{
+						existing = node.Nodes[i];
+						break;
+					}
+
+				if(existing == null)
+				{
+					TreeNode childNode = new TreeNode(child.ToString()) { Tag = child, ForeColor = child.IsVisible ? Color.Black : Color.Gray };
+					childNode.Nodes.Add(new TreeNode());
+					node.Nodes.Insert(insertIndex, childNode);
+				} else
+				{
+					existing.Text = child.ToString();
+					existing.ForeColor = child.IsVisible ? Color.Black : Color.Gray;
+					this.RefreshTreeNode(existing);
+					if(existing.Index != insertIndex)
+					{
+						node.Nodes.Remove(existing);
+						node.Nodes.Insert(insertIndex, existing);
+					}
+				}
+				insertIndex++;
+			}
 		}
 
 		private void tvWindows_MouseClick(Object sender, MouseEventArgs e)
