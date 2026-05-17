@@ -16,7 +16,7 @@
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
 		<PackageVersion Include="coverlet.collector" Version="6.0.2" />
 		<!--Analyzers-->
-		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
+		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.25.0.139117">
 			<PrivateAssets>All</PrivateAssets>
 			<IncludeAssets>Runtime; Build; Native; contentfiles; Analyzers; buildtransitive</IncludeAssets>
 		</GlobalPackageReference>
