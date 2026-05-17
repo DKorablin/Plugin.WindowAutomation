@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.IO;
 using Plugin.WindowAutomation.Dto;
 using Plugin.WindowAutomation.Native;
 using Plugin.WindowAutomation.Plugins;
@@ -65,8 +68,93 @@ namespace Plugin.WindowAutomation
 			Plugin.Instance = this;
 			Plugin.Trace = trace ?? throw new ArgumentNullException(nameof(trace));
 		}
+
+		/// <summary>Creates and returns a plugin control window of the specified type.</summary>
+		/// <param name="typeName">The fully qualified name of the plugin control type to create. Cannot be null or empty.</param>
+		/// <param name="args">An object containing arguments to pass to the plugin control's constructor, or null if no arguments are required.</param>
+		/// <returns>An instance of a window implementing the IWindow interface for the specified plugin control type.</returns>
 		public IWindow GetPluginControl(String typeName, Object args)
 			=> this.CreateWindow(typeName, false, args);
+
+		/// <summary>
+		/// Retrieves an array of information about all currently opened top-level windows that are visible and have a non-empty caption.
+		/// </summary>
+		/// <remarks>This method excludes windows that are not visible or do not have a caption.
+		/// The returned windows may include those from other processes.
+		/// The order of windows in the array is not guaranteed.
+		/// </remarks>
+		/// <returns>
+		/// An array of <see cref="WindowInfo"/> objects representing the visible, captioned top-level windows currently open on the system.
+		/// The array is empty if no such windows are found.
+		/// </returns>
+		public WindowInfo[] GetOpenedWindows()
+		{
+			List<WindowInfo> result = new List<WindowInfo>();
+			Native.Window.EnumWindows((hWnd, lParam) =>
+			{
+				WindowInfo info = new WindowInfo(hWnd);
+				if(!info.IsVisible)
+					return true;
+
+				if(String.IsNullOrEmpty(info.Caption))
+					return true;
+
+				result.Add(info);
+				return true;
+			}, IntPtr.Zero);
+			return result.ToArray();
+		}
+
+		/// <summary>
+		/// Captures a bitmap image of the window specified by its handle and returns the image data as a PNG-encoded byte array.
+		/// </summary>
+		/// <remarks>
+		/// The returned image represents the visible content of the specified window at the time of the call.
+		/// If the window is minimized, covered, or otherwise not fully visible, the captured image may reflect its current on-screen state.
+		/// </remarks>
+		/// <param name="handleId">The handle of the window to capture, represented as a 64-bit integer.
+		/// Must correspond to a valid window handle.
+		/// </param>
+		/// <returns>
+		/// A byte array containing the PNG-encoded bitmap of the window's current screen content; or null if the handle is zero or invalid.</returns>
+		public Byte[] GetWindowBitmap(Int64 handleId)
+		{
+			IntPtr handle = new IntPtr(handleId);
+			if(handle == IntPtr.Zero)
+				return null;
+
+			WindowInfo info = new WindowInfo(handle);
+			using(var bitmap = info.GetWindowScreen())
+				return WindowInfo.ConvertBitmap(bitmap, ImageFormat.Png);
+		}
+
+		/// <summary>
+		/// Simulates a mouse click at the specified coordinates, where x=0;y=0 equals to top left corner of the window, within the window identified by the given handle and returns a PNG image of the window after the click.
+		/// </summary>
+		/// <remarks>
+		/// The method brings the target window to the foreground before performing the click.
+		/// The returned image reflects the window's appearance approximately two seconds after the click.
+		/// This method blocks for at least two seconds to allow the window to update its display.
+		/// </remarks>
+		/// <param name="handleId">The handle of the target window, as a 64-bit integer. Must not be zero.</param>
+		/// <param name="x">The x-coordinate, in pixels, relative to the client area of the window, where the click will be performed.</param>
+		/// <param name="y">The y-coordinate, in pixels, relative to the client area of the window, where the click will be performed.</param>
+		/// <returns>A byte array containing the PNG-encoded image of the window after the click is performed; or null if the handle is zero or invalid.</returns>
+		public Byte[] ClickOnWindow(Int64 handleId, Int32 x, Int32 y)
+		{
+			IntPtr handle = new IntPtr(handleId);
+			if(handle == IntPtr.Zero)
+				return null;
+
+			WindowInfo info = new WindowInfo(handle);
+			info.Focus(ensureFocused: true)
+			.Click(x, y);
+
+			System.Threading.Thread.Sleep(2000);
+
+			using(var changed = info.GetWindowScreen())
+				return WindowInfo.ConvertBitmap(changed, ImageFormat.Png);
+		}
 
 		Boolean IPlugin.OnConnection(ConnectMode mode)
 		{
@@ -134,8 +222,8 @@ namespace Plugin.WindowAutomation
 				? this.HostWindows.Windows.CreateWindow(this, typeName, searchForOpened, state, args)
 				: null;
 
-		/// <summary>Get a unique method name for the new timer</summary>
-		/// <returns>Unique method name</returns>
+		/// <summary>Generates a unique method name that does not conflict with any existing compiled method names.</summary>
+		/// <returns>A unique method name based on the base name "WindowClicker", suffixed with an incrementing number if necessary.</returns>
 		public String GetUniqueMethodName()
 		{
 			const String ConstMethodName = "WindowClicker";
@@ -143,7 +231,7 @@ namespace Plugin.WindowAutomation
 			UInt32 count = 1;
 			String[] methods = this.Compiler.GetMethods();
 			while(Array.Exists(methods, item => item == methodName))
-				methodName = String.Join("_", new String[] { ConstMethodName, (count++).ToString(), });
+				methodName = String.Join("_", ConstMethodName, (count++).ToString());
 
 			return methodName;
 		}

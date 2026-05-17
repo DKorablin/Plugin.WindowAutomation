@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34511.84
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11430.68 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB15D54B-C3B1-4D63-BD2D-2ABBC79156C1}"
 	ProjectSection(SolutionItems) = preProject
@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflow", "Workflow", "{F0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.WindowAutomation", "Plugin.WindowAutomation\Plugin.WindowAutomation.csproj", "{96802AF7-2147-9A14-1A50-B209A5A40777}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.WindowAutomation.Tests", "Plugin.WindowAutomation.Tests\Plugin.WindowAutomation.Tests.csproj", "{864E2214-9A56-1F04-AAB8-F1BEE604AF52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{96802AF7-2147-9A14-1A50-B209A5A40777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96802AF7-2147-9A14-1A50-B209A5A40777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96802AF7-2147-9A14-1A50-B209A5A40777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{864E2214-9A56-1F04-AAB8-F1BEE604AF52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{864E2214-9A56-1F04-AAB8-F1BEE604AF52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{864E2214-9A56-1F04-AAB8-F1BEE604AF52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{864E2214-9A56-1F04-AAB8-F1BEE604AF52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

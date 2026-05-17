@@ -769,6 +769,9 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll", SetLastError = true)]
 		private static extern Boolean GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
+		[DllImport("user32.dll", SetLastError = true)]
+		private static extern Boolean GetClientRect(IntPtr hWnd, out RECT lpRect);
+
 		[Flags]
 		public enum SWP : UInt32
 		{
@@ -885,6 +888,24 @@ namespace Plugin.WindowAutomation.Native
 			return rect.ToRectangle();
 		}
 
+		/// <summary>
+		/// Retrieves the coordinates of the client area of the specified window.
+		/// </summary>
+		/// <remarks>The client area excludes the window's title bar, menu, and borders. The coordinates are relative
+		/// to the upper-left corner of the client area.</remarks>
+		/// <param name="hWnd">A handle to the window whose client rectangle is to be retrieved. Must not be <see cref="IntPtr.Zero"/>.</param>
+		/// <returns>A <see cref="Rectangle"/> that represents the client area of the specified window, in client coordinates.</returns>
+		/// <exception cref="Win32Exception">Thrown if the client rectangle cannot be retrieved.</exception>
+		public static Rectangle GetClientRect(IntPtr hWnd)
+		{
+			Debug.Assert(hWnd != IntPtr.Zero);
+
+			if(!Window.GetClientRect(hWnd, out RECT rect))
+				throw new Win32Exception();
+			return rect.ToRectangle();
+
+		}
+
 		public static void SetWindowPos(IntPtr hWnd,InsertAfter insertAfter, Rectangle rect, SWP uFlags)
 		{
 			Debug.Assert(hWnd != IntPtr.Zero);
@@ -904,6 +925,17 @@ namespace Plugin.WindowAutomation.Native
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
-		public static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
+		private static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
+
+		public delegate Boolean EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+		/// <summary>Enumerates all top-level windows on the screen.</summary>
+		[DllImport("user32.dll")]
+		public static extern Boolean EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+		/// <summary>Retrieves a handle to the foreground window (the window with which the user is currently working).</summary>
+		/// <returns>The handle to the foreground window, or <see cref="IntPtr.Zero"/> if there is no foreground window.</returns>
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetForegroundWindow();
 	}
 }

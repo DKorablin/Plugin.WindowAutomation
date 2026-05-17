@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<IsPackable>False</IsPackable>
+		<IsTestProject>True</IsTestProject>
+		<IsPublishable>False</IsPublishable>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<CopyCodeCoverageMetadata>false</CopyCodeCoverageMetadata>
+		<NoWarn>CA1416</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Plugin.WindowAutomation\Plugin.WindowAutomation.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Moq" />
+		<PackageReference Include="Moq.AutoMock" />
+		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="XUnit" />
+		<PackageReference Include="XUnit.Runner.VisualStudio" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="coverlet.collector" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SAL.Windows" />
+	</ItemGroup>
+
+</Project>

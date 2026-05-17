@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -31,7 +32,9 @@ namespace Plugin.WindowAutomation.Dto
 		}
 		private String _className;
 		/// <summary>Gets the native window handle (HWND).</summary>
-		public IntPtr Handle { get; }
+		internal IntPtr Handle { get; }
+
+		public Int64 HandleId => this.Handle.ToInt64();
 
 		/// <summary>Gets whether the handle is zero (no window).</summary>
 		public Boolean IsEmpty => this.Handle == IntPtr.Zero;
@@ -197,7 +200,7 @@ namespace Plugin.WindowAutomation.Dto
 		public String GetWindowText()
 		{
 			StringBuilder result = new StringBuilder(256);
-			if(Native.Window.SendMessageTimeoutText(this.Handle, Native.Window.WM.GETTEXT, result.Capacity, result, Native.Window.SMTO.ABORTIFHUNG, 100, out IntPtr dwResult) == 0)
+			if(Native.Window.SendMessageTimeoutText(this.Handle, Native.Window.WM.GETTEXT, result.Capacity, result, Native.Window.SMTO.ABORTIFHUNG, 100, out IntPtr _) == 0)
 			{
 				Int32 errorCode = Marshal.GetLastWin32Error();
 				return errorCode == 0//If the function returns 0, and GetLastError returns ERROR_SUCCESS, then treat it as a generic failure.
@@ -216,15 +219,31 @@ namespace Plugin.WindowAutomation.Dto
 		}
 
 		/// <summary>Brings the window into the foreground and activates it.</summary>
-		public void Focus()
+		public WindowInfo Focus(Boolean ensureFocused = false)
 		{
 			if(this.IsEmpty)
-				return;
+				return this;
 
 			if(Native.Window.IsIconic(this.Handle))
 				Native.Window.ShowWindow(this.Handle, Native.Window.SW.SHOWNORMAL);
 
 			Native.Window.SetForegroundWindow(this.Handle);
+
+			if(ensureFocused)
+			{
+				const Int32 FocusTimeoutMs = 3000;
+				const Int32 FocusPollMs = 50;
+				Int32 elapsed = 0;
+				while(Native.Window.GetForegroundWindow() != this.Handle && elapsed < FocusTimeoutMs)
+				{
+					System.Threading.Thread.Sleep(FocusPollMs);
+					elapsed += FocusPollMs;
+				}
+
+				if(Native.Window.GetForegroundWindow() != this.Handle)
+					throw new InvalidOperationException($"Window 0x{this.Handle.ToInt64():X8} did not become foreground within {FocusTimeoutMs}ms.");
+			}
+			return this;
 		}
 
 		/// <summary>Toggles a temporary border highlight by drawing an XOR rectangle on the window DC.</summary>
@@ -243,7 +262,8 @@ namespace Plugin.WindowAutomation.Dto
 					throw new InvalidOperationException();
 
 				Color color = Color.FromArgb(0, 255, 0);
-				IntPtr pen = Native.Gdi.CreatePen((Int32)Native.Gdi.PenStyles.PS_INSIDEFRAME, 3 * Native.Window.GetSystemMetrics(Native.Window.SM.CXBORDER), (UInt32)color.ToArgb());
+				UInt32 crColor = (UInt32)(color.ToArgb() & 0x00FFFFFF);//(UInt32)color.ToArgb();
+				IntPtr pen = Native.Gdi.CreatePen((Int32)Native.Gdi.PenStyles.PS_INSIDEFRAME, 3 * Native.Window.GetSystemMetrics(Native.Window.SM.CXBORDER), crColor);
 				Debug.Assert(pen != IntPtr.Zero);
 
 				try
@@ -286,12 +306,14 @@ namespace Plugin.WindowAutomation.Dto
 		}
 
 		/// <summary>Captures a bitmap of this window's bounds using PrintWindow; falls back to full desktop if empty.</summary>
-		public Bitmap GetWindowBitmap()
+		public Bitmap GetWindowBitmap(Boolean onlyClientArea = false)
 		{
 			if(this.IsEmpty)
 				return GetDesktopBitmap();
 
-			Rectangle rect = Native.Window.GetWindowRect(this.Handle);
+			Rectangle rect = onlyClientArea
+				? Native.Window.GetClientRect(this.Handle)
+				: Native.Window.GetWindowRect(this.Handle);
 			if(rect.Width == 0 || rect.Height == 0)
 				return null;
 
@@ -311,6 +333,39 @@ namespace Plugin.WindowAutomation.Dto
 			return result;
 		}
 
+		public Bitmap GetWindowScreen(Boolean onlyClientArea = false)
+		{
+			if(this.IsEmpty)
+				return GetDesktopBitmap();
+
+			Rectangle rect = onlyClientArea
+				? Native.Window.GetClientRect(this.Handle)
+				: Native.Window.GetWindowRect(this.Handle);
+			if(rect.Width == 0 || rect.Height == 0)
+				return null;
+
+			Point screenOrigin = onlyClientArea
+				? this.Rect.Location
+				: rect.Location;
+
+			Bitmap result = new Bitmap(rect.Width, rect.Height);
+			using(Graphics g = Graphics.FromImage(result))
+				g.CopyFromScreen(screenOrigin.X, screenOrigin.Y, 0, 0, result.Size);
+
+			return result;
+		}
+
+		public static Byte[] ConvertBitmap(Bitmap bitmap, ImageFormat format)
+		{
+			_ = bitmap ?? throw new ArgumentNullException(nameof(bitmap));
+
+			using(System.IO.MemoryStream stream = new System.IO.MemoryStream())
+			{
+				bitmap.Save(stream, format);
+				return stream.ToArray();
+			}
+		}
+
 		/// <summary>Captures a bitmap of the entire virtual desktop across all monitors.</summary>
 		public static Bitmap GetDesktopBitmap()
 		{
@@ -325,7 +380,7 @@ namespace Plugin.WindowAutomation.Dto
 			using(Graphics g = Graphics.FromImage(result))
 			{
 				g.CompositingQuality = CompositingQuality.HighSpeed;
-				g.FillRectangle(SystemBrushes.Desktop, 0, 0, rcScreen.Width - rcScreen.X, rcScreen.Height - rcScreen.Y);
+				g.FillRectangle(SystemBrushes.Desktop, 0, 0, rcScreen.Width, rcScreen.Height);
 
 				IntPtr hdcDestination = g.GetHdc();
 				try
@@ -397,6 +452,24 @@ namespace Plugin.WindowAutomation.Dto
 			return hIcon == IntPtr.Zero
 				? null
 				: Bitmap.FromHicon(hIcon);
+		}
+
+		/// <summary>Moves the cursor to the given window-relative coordinates and performs a left mouse button click.</summary>
+		/// <param name="x">X offset from the window's client top-left corner.</param>
+		/// <param name="y">Y offset from the window's client top-left corner.</param>
+		public WindowInfo Click(Int32 x, Int32 y)
+		{
+			if(this.IsEmpty)
+				return this;
+
+			Point screenPoint = new Point(x, y);
+			if(!Native.Window.ClientToScreen(this.Handle, ref screenPoint))
+				throw new Win32Exception();
+
+			Native.Mouse.SetCursorPos(screenPoint.X, screenPoint.Y);
+			Native.Mouse.MouseLClick();
+
+			return this;
 		}
 
 		/// <summary>Computes hash code based on the window handle.</summary>

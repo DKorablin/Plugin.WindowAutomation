@@ -6,7 +6,7 @@ Automation plugin for SAL Windows host providing keyboard / mouse macro recordin
 ## Features
 * Action Project ("Clicker")
   * Record keyboard strokes and mouse clicks into a sequence of typed actions (ActionKey, ActionMouse, ActionText, ActionMethod).
-  * Persist projects as JSON (multi-targeted serializer using Newtonsoft.Json for modern TFMs and compatible fallback for .NET 3.5).
+  * Persist projects as JSON (multi-targeted serializer using Newtonsoft.Json for modern TFMs and compatible fallback for .NET 4.8).
   * Validate and replay actions with configurable per–action delays (Timeout) and looping when final ActionMethod returns true.
 * Dynamic Method Integration
   * Optional runtime compilation plugin (identified by GUID `425f8b0c-f049-44ee-8375-4cc874d6bf94`) can supply custom methods (ActionMethod) invoked inside sequences.

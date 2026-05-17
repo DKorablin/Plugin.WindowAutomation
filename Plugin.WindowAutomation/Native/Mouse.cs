@@ -36,7 +36,7 @@ namespace Plugin.WindowAutomation.Native
 		[DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
 		public static extern void mouse_event(MOUSEEVENTF dwFlags, Int32 dx, Int32 dy, Int32 cButtons, Int32 dwExtraInfo);
 
-		[DllImport("user32")]
+		[DllImport("user32.dll")]
 		public static extern Int32 SetCursorPos(Int32 x, Int32 y);
 
 		
