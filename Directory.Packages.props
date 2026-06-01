@@ -14,7 +14,7 @@
 		<PackageVersion Include="XUnit" Version="2.9.3" />
 		<PackageVersion Include="XUnit.Runner.VisualStudio" Version="3.1.5" />
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-		<PackageVersion Include="coverlet.collector" Version="6.0.2" />
+		<PackageVersion Include="coverlet.collector" Version="10.0.1" />
 		<!--Analyzers-->
 		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
 			<PrivateAssets>All</PrivateAssets>
