@@ -7,14 +7,8 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<ArtifactsDir Condition="'$(ArtifactsDir)' == ''">$(SolutionDir)..\bin\$(SolutionName)</ArtifactsDir>
-		<OutputPath Condition="'$(IsTestProject)' != 'true'">$(ArtifactsDir)</OutputPath>
+		<OutputPath>$(ArtifactsDir)</OutputPath>
 		<AppendTargetFrameworkToOutputPath>True</AppendTargetFrameworkToOutputPath>
 		<BaseIntermediateOutputPath>$(MSBuildProjectDirectory)\..\..\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(IsTestProject)' == 'true'">
-		<TestArtifactsDir Condition="'$(TestArtifactsDir)' == ''">$(SolutionDir)..\bin-tests\$(SolutionName)</TestArtifactsDir>
-		<OutputPath>$(TestArtifactsDir)</OutputPath>
-		<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 </Project>
